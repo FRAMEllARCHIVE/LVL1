@@ -61,7 +61,7 @@ svg {
     <img id="player" src="wisp.gif" alt="Player">
     <div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
 
- collision-barriers = <svg version="1.1" id="collision-barriers" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+<svg version="1.1" id="collision-barriers" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
        viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
     <style type="text/css">
       .st0 {
@@ -80,20 +80,38 @@ svg {
 const player = document.getElementById('player');
 const svgBarriers = document.getElementById('collision-barriers');
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      const playerRect = player.getBoundingClientRect();
-      const svgRect = svgBarriers.getBoundingClientRect();
-      const deltaX = Math.min(0, svgRect.right - playerRect.right);
-      const deltaY = Math.min(0, svgRect.bottom - playerRect.bottom);
-      player.style.left = (player.offsetLeft - deltaX) + 'px';
-      player.style.top = (player.offsetTop - deltaY) + 'px';
-    }
-  });
-});
+function getOverlap(rect1, rect2) {
+  const xOverlap = Math.min(0, rect2.right - rect1.left, rect1.right - rect2.left);
+  const yOverlap = Math.min(0, rect2.bottom - rect1.top, rect1.bottom - rect2.top);
+  return { xOverlap, yOverlap };
+}
 
-observer.observe(player, { root: svgBarriers });
+function handleCollision() {
+  const playerRect = player.getBoundingClientRect();
+  const svgPoints = [];
+
+  const svgPolygons = svgBarriers.querySelectorAll('polygon');
+  for (const polygon of svgPolygons) {
+    const pointsString = polygon.getAttribute('points');
+    const pointsArray = pointsString.split(' ').map(point => {
+      const [x, y] = point.split(',');
+      return { x: parseFloat(x), y: parseFloat(y) };
+    });
+    svgPoints.push(pointsArray);
+  }
+
+  for (const points of svgPoints) {
+    const { xOverlap, yOverlap } = getOverlap(playerRect, points);
+    if (xOverlap !== 0 || yOverlap !== 0) {
+      // Collision detected, move player
+      player.style.left = (player.offsetLeft - Math.sign(xOverlap) * Math.abs(xOverlap)) + 'px';
+      player.style.top = (player.offsetTop - Math.sign(yOverlap) * Math.abs(yOverlap)) + 'px';
+      break; // Exit loop after first collision
+    }
+  }
+}
+
+setInterval(handleCollision, 10);
 
 
 
