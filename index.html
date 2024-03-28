@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PONDER</title>
     <style>
-
-body {
-  margin: 0;
-  overflow: hidden;
-  background: black url("level.webp") no-repeat center center fixed;
-  background-size: contain;
-  background-position: center center;
-}
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black url("level.webp") no-repeat center center fixed;
+            background-size: contain;
+            background-position: center center;
+        }
 
         #player {
             position: fixed;
@@ -20,7 +19,7 @@ body {
             top: 90%;
             left: 50%;
             transform: translate(-50%, -50%);
-            opacity:88%;
+            opacity: 88%;
         }
 
         @font-face {
@@ -30,15 +29,14 @@ body {
             font-style: normal;
         }
 
-svg {
-  width: 100vw;
-  opacity: 0.5;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
+        svg {
+            width: 100vw;
+            opacity: 0.5;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
         #fullscreen-button {
             position: fixed;
@@ -61,61 +59,74 @@ svg {
     <img id="player" src="wisp.gif" alt="Player">
     <div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
 
-<svg version="1.1" id="collision-barriers" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-       viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
-    <style type="text/css">
-      .st0 {
-        fill: #FF0000;
-      }
-    </style>
-    <title>collisions</title>
-<polygon class="st0" points="0,0 0,63.8 17.1,63.8 17.1,61.2 29.5,60.5 29.5,57.2 31.9,57.2 33.8,56.7 33.8,53.7 37.3,53.2 
-	37.3,50.4 33.7,49.8 51.1,44.5 51.1,42.4 52.2,42.4 52.2,40.3 54.1,40.3 54.1,38.7 55.7,38.7 55.7,36.7 60.8,36.7 60.8,34.4 
-	63.8,34.4 63.8,0 "/>
-<polygon class="st0" points="44.9,63.8 44.9,56.7 52.4,52.5 54.3,53.7 56.6,53.8 56.6,51.8 62.6,48.4 63.8,49.1 63.8,63.8 "/>
-</svg>
+    <svg version="1.1" id="collision-barriers" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+         viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
+        <style type="text/css">
+            .st0 {
+                fill: #FF0000;
+            }
+        </style>
+        <title>collisions</title>
+        <polygon class="st0" points="0,0 0,63.8 17.1,63.8 17.1,61.2 29.5,60.5 29.5,57.2 31.9,57.2 33.8,56.7 33.8,53.7 37.3,53.2 
+        37.3,50.4 33.7,49.8 51.1,44.5 51.1,42.4 52.2,42.4 52.2,40.3 54.1,40.3 54.1,38.7 55.7,38.7 55.7,36.7 60.8,36.7 60.8,34.4 
+        63.8,34.4 63.8,0 "/>
+        <polygon class="st0" points="44.9,63.8 44.9,56.7 52.4,52.5 54.3,53.7 56.6,53.8 56.6,51.8 62.6,48.4 63.8,49.1 63.8,63.8 "/>
+    </svg>
 
     <script>
+        const player = document.getElementById('player');
+        const svgBarriers = document.getElementById('collision-barriers');
 
-const player = document.getElementById('player');
-const svgBarriers = document.getElementById('collision-barriers');
+        function getPolygonPoints(polygon) {
+            const pointsString = polygon.getAttribute('points');
+            return pointsString.split(' ').map(point => {
+                const [x, y] = point.split(',');
+                return { x: parseFloat(x), y: parseFloat(y) };
+            });
+        }
 
-function getOverlap(rect1, rect2) {
-  const xOverlap = Math.min(0, rect2.right - rect1.left, rect1.right - rect2.left);
-  const yOverlap = Math.min(0, rect2.bottom - rect1.top, rect1.bottom - rect2.top);
-  return { xOverlap, yOverlap };
-}
+        function pointInsidePolygon(point, polygonPoints) {
+            let inside = false;
+            for (let i = 0, j = polygonPoints.length - 1; i < polygonPoints.length; j = i++) {
+                const xi = polygonPoints[i].x, yi = polygonPoints[i].y;
+                const xj = polygonPoints[j].x, yj = polygonPoints[j].y;
 
-function handleCollision() {
-  const playerRect = player.getBoundingClientRect();
-  const svgPoints = [];
+                const intersect = ((yi > point.y) != (yj > point.y)) &&
+                    (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
 
-  const svgPolygons = svgBarriers.querySelectorAll('polygon');
-  for (const polygon of svgPolygons) {
-    const pointsString = polygon.getAttribute('points');
-    const pointsArray = pointsString.split(' ').map(point => {
-      const [x, y] = point.split(',');
-      return { x: parseFloat(x), y: parseFloat(y) };
-    });
-    svgPoints.push(pointsArray);
-  }
+        function handleCollision() {
+            const playerRect = player.getBoundingClientRect();
+            const svgPolygons = svgBarriers.querySelectorAll('polygon');
+            for (const polygon of svgPolygons) {
+                const polygonPoints = getPolygonPoints(polygon);
+                const playerCorners = [
+                    { x: playerRect.left, y: playerRect.top },
+                    { x: playerRect.right, y: playerRect.top },
+                    { x: playerRect.left, y: playerRect.bottom },
+                    { x: playerRect.right, y: playerRect.bottom }
+                ];
+                for (const corner of playerCorners) {
+                    if (pointInsidePolygon(corner, polygonPoints)) {
+                        // Collision detected, adjust player position
+                        const dx = playerRect.width / 2;
+                        const dy = playerRect.height / 2;
+                        const newX = corner.x - dx;
+                        const newY = corner.y - dy;
+                        player.style.left = `${newX}px`;
+                        player.style.top = `${newY}px`;
+                        return; // Exit after first collision
+                    }
+                }
+            }
+        }
 
-  for (const points of svgPoints) {
-    const { xOverlap, yOverlap } = getOverlap(playerRect, points);
-    if (xOverlap !== 0 || yOverlap !== 0) {
-      // Collision detected, move player
-      player.style.left = (player.offsetLeft - Math.sign(xOverlap) * Math.abs(xOverlap)) + 'px';
-      player.style.top = (player.offsetTop - Math.sign(yOverlap) * Math.abs(yOverlap)) + 'px';
-      break; // Exit loop after first collision
-    }
-  }
-}
+        setInterval(handleCollision, 10);
 
-setInterval(handleCollision, 10);
-
-
-
-function toggleFullscreenAndPlayAudio() {
+        function toggleFullscreenAndPlayAudio() {
             const docElement = document.documentElement;
 
             if (docElement.requestFullscreen) {
@@ -131,7 +142,7 @@ function toggleFullscreenAndPlayAudio() {
         }
 
         if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', function(event) {
+            window.addEventListener('deviceorientation', function (event) {
                 var y = event.beta;
                 var x = event.gamma;
                 var movementSpeedX = x * 0.1;
@@ -152,7 +163,6 @@ function toggleFullscreenAndPlayAudio() {
         if (!document.documentElement.requestFullscreen) {
             document.getElementById('fullscreen-button').style.display = 'none';
         }
-
     </script>
 </body>
 </html>
