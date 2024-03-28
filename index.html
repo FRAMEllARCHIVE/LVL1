@@ -51,9 +51,32 @@ body {
     <img id="player" src="wisp.gif" alt="Player">
     <div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
 
+  <svg id="collision-barriers" style="position: absolute; top: 0; left: 0; opacity: 0;">
+    </svg>
+
     <script>
 
-        function toggleFullscreenAndPlayAudio() {
+const player = document.getElementById('player');
+const svgBarriers = document.getElementById('collision-barriers');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const playerRect = player.getBoundingClientRect();
+      const svgRect = svgBarriers.getBoundingClientRect();
+      const deltaX = Math.min(0, svgRect.right - playerRect.right);
+      const deltaY = Math.min(0, svgRect.bottom - playerRect.bottom);
+      player.style.left = (player.offsetLeft - deltaX) + 'px';
+      player.style.top = (player.offsetTop - deltaY) + 'px';
+    }
+  });
+});
+
+observer.observe(player, { root: svgBarriers });
+
+
+
+function toggleFullscreenAndPlayAudio() {
             const docElement = document.documentElement;
 
             if (docElement.requestFullscreen) {
@@ -65,9 +88,7 @@ body {
                     });
                 }
             }
-
             document.getElementById('fullscreen-button').style.display = 'none';
-
         }
 
         if (window.DeviceOrientationEvent) {
