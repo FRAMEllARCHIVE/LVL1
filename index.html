@@ -98,33 +98,64 @@
             return inside;
         }
 
-        function handleCollision() {
-            const playerRect = player.getBoundingClientRect();
-            const svgPolygons = svgBarriers.querySelectorAll('polygon');
-            for (const polygon of svgPolygons) {
-                const polygonPoints = getPolygonPoints(polygon);
-                const playerCorners = [
-                    { x: playerRect.left, y: playerRect.top },
-                    { x: playerRect.right, y: playerRect.top },
-                    { x: playerRect.left, y: playerRect.bottom },
-                    { x: playerRect.right, y: playerRect.bottom }
-                ];
-                for (const corner of playerCorners) {
-                    if (pointInsidePolygon(corner, polygonPoints)) {
-                        // Collision detected, adjust player position
-                        const dx = playerRect.width / 2;
-                        const dy = playerRect.height / 2;
-                        const newX = corner.x - dx;
-                        const newY = corner.y - dy;
-                        player.style.left = `${newX}px`;
-                        player.style.top = `${newY}px`;
-                        return; // Exit after first collision
-                    }
-                }
-            }
-        }
+function handleCollision() {
+  const playerRect = player.getBoundingClientRect();
+  const svgPolygons = svgBarriers.querySelectorAll('polygon');
+  for (const polygon of svgPolygons) {
+    const polygonPoints = getPolygonPoints(polygon);
+
+    const playerPoints = [
+      { x: playerRect.left + playerRect.width / 2, y: playerRect.top }, // Center Top
+      { x: playerRect.right, y: playerRect.top + playerRect.height / 2 }, // Center Right
+      { x: playerRect.left, y: playerRect.top + playerRect.height / 2 }, // Center Left
+      { x: playerRect.left + playerRect.width / 2, y: playerRect.bottom }, // Center Bottom
+      { x: playerRect.left, y: playerRect.top }, // Top Left
+      { x: playerRect.right, y: playerRect.top }, // Top Right
+      { x: playerRect.left, y: playerRect.bottom }, // Bottom Left
+      { x: playerRect.right, y: playerRect.bottom }  // Bottom Right
+    ];
+
+    for (const point of playerPoints) {
+      if (pointInsidePolygon(point, polygonPoints)) {
+        const dx = calculateOverlapX(playerRect, polygonPoints);
+        const dy = calculateOverlapY(playerRect, polygonPoints);
+        const newX = point.x - dx;
+        const newY = point.y - dy;
+        player.style.left = `${newX}px`;
+        player.style.top = `${newY}px`;
+        return; // Exit after first collision
+      }
+    }
+  }
+}
 
         setInterval(handleCollision, 10);
+
+function calculateOverlapX(playerRect, polygonPoints) {
+  let minOverlap = Infinity;
+  for (const point of polygonPoints) {
+    const distance = Math.abs(point.x - playerRect.left);
+    minOverlap = Math.min(minOverlap, distance);
+  }
+  return Math.min(minOverlap, Math.abs(playerRect.right - polygonPoints[0].x)); // Consider right edge too
+}
+
+function calculateOverlapY(playerRect, polygonPoints) {
+  let minOverlap = Infinity;
+  for (const point of polygonPoints) {
+    const distance = Math.abs(point.y - playerRect.top);
+minOverlap = Math.min(minOverlap, Math.abs(point.x - playerRect.left));
+
+  }
+  return Math.min(minOverlap, Math.abs(playerRect.bottom - polygonPoints[0].y)); // Consider bottom edge too
+}
+
+
+
+
+
+
+
 
         function toggleFullscreenAndPlayAudio() {
             const docElement = document.documentElement;
