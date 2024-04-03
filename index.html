@@ -13,23 +13,21 @@
             background-position: center center;
         }
 
-#player-container {
-  position: fixed;
-  top: 90%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+        #player-container {
+            position: fixed;
+            top: 90%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-#player-container img {
-  width: 100px;
-  height: auto;
-}
+        #player-container img {
+            width: 100px;
+            height: auto;
+        }
 
-#player-shape {
-  fill: red;
-}
-
-
+        #player-shape {
+            fill: red;
+        }
 
         @font-face {
             font-family: 'font';
@@ -38,15 +36,14 @@
             font-style: normal;
         }
 
-svg {
-  width: calc(min(100vw, 100vh));
-  opacity: 0.5;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
+        svg {
+            width: calc(min(100vw, 100vh));
+            opacity: 0.5;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
         #fullscreen-button {
             position: fixed;
@@ -62,39 +59,36 @@ svg {
             font-family: 'font', sans-serif;
             z-index: 5;
         }
-
     </style>
 </head>
 <body>
 
-  <div id="player-container">
+<div id="player-container">
     <img src="wisp.gif" alt="Player">
     <svg id="player-shape" width="25" height="25" viewBox="0 0 6.16 2.22">
         <defs>
-          <style>.cls-1{fill:red;}</style>
+            <style>.cls-1{fill:red;}</style>
         </defs>
         <title>player</title>
         <ellipse class="cls-1" cx="3.08" cy="1.11" rx="3.08" ry="1.11"/>
-      </svg>
     </svg>
-  </div>
+</div>
 
+<div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
 
-    <div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
-
-    <svg version="1.1" id="collision" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-         viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
-        <style type="text/css">
-            .st0 {
-                fill: #FF0000;
-            }
-        </style>
-        <title>collisions</title>
-        <polygon class="st0" points="0,0 0,63.8 17.1,63.8 17.1,61.2 29.5,60.5 29.5,57.2 31.9,57.2 33.8,56.7 33.8,53.7 37.3,53.2 
+<svg version="1.1" id="collision" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
+    <style type="text/css">
+        .st0 {
+            fill: #FF0000;
+        }
+    </style>
+    <title>collisions</title>
+    <polygon class="st0" points="0,0 0,63.8 17.1,63.8 17.1,61.2 29.5,60.5 29.5,57.2 31.9,57.2 33.8,56.7 33.8,53.7 37.3,53.2 
         37.3,50.4 33.7,49.8 51.1,44.5 51.1,42.4 52.2,42.4 52.2,40.3 54.1,40.3 54.1,38.7 55.7,38.7 55.7,36.7 60.8,36.7 60.8,34.4 
         63.8,34.4 63.8,0 "/>
-        <polygon class="st0" points="44.9,63.8 44.9,56.7 52.4,52.5 54.3,53.7 56.6,53.8 56.6,51.8 62.6,48.4 63.8,49.1 63.8,63.8 "/>
-    </svg>
+    <polygon class="st0" points="44.9,63.8 44.9,56.7 52.4,52.5 54.3,53.7 56.6,53.8 56.6,51.8 62.6,48.4 63.8,49.1 63.8,63.8 "/>
+</svg>
 
 <script>
     const playerContainer = document.getElementById('player-container');
@@ -114,6 +108,11 @@ svg {
             }
         }
         document.getElementById('fullscreen-button').style.display = 'none';
+    }
+
+    function debugCollision(playerX, playerY, collisionDetected) {
+        console.log("Player Position: ", playerX, playerY);
+        console.log("Collision Detected: ", collisionDetected);
     }
 
     if (window.DeviceOrientationEvent) {
@@ -154,6 +153,9 @@ svg {
                 playerContainer.style.left = playerX + 'px';
                 playerContainer.style.top = playerY + 'px';
             }
+
+            // Debug collision detection
+            debugCollision(playerX, playerY, collisionDetected);
         });
     } else {
         alert("Device orientation is not supported on this device.");
