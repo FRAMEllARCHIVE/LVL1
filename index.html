@@ -100,7 +100,6 @@ svg {
     const playerContainer = document.getElementById('player-container');
     const player = document.getElementById('player-shape');
     const svgBarriers = document.getElementById('collision');
-    const playerSVG = document.getElementById('player-shape');
 
     function toggleFullscreenAndPlayAudio() {
         const docElement = document.documentElement;
@@ -148,8 +147,12 @@ svg {
             }
 
             if (!collisionDetected) {
-                playerContainer.style.left = Math.min(Math.max(playerX, 0), maxX) + 'px';
-                playerContainer.style.top = Math.min(Math.max(playerY, 0), maxY) + 'px';
+                // Ensure the player does not go beyond the boundaries
+                playerX = Math.min(Math.max(playerX, 0), maxX);
+                playerY = Math.min(Math.max(playerY, 0), maxY);
+
+                playerContainer.style.left = playerX + 'px';
+                playerContainer.style.top = playerY + 'px';
             }
         });
     } else {
