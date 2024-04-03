@@ -13,14 +13,23 @@
             background-position: center center;
         }
 
-        #player {
-            position: fixed;
-            width: 10%;
-            top: 90%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.8;
-        }
+#player-container {
+  position: fixed;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#player-container img {
+  width: 100px;
+  height: auto;
+}
+
+#player-shape {
+  fill: red;
+}
+
+
 
         @font-face {
             font-family: 'font';
@@ -58,10 +67,9 @@ svg {
 </head>
 <body>
 
-  <div id="player">
+  <div id="player-container">
     <img src="wisp.gif" alt="Player">
-    <svg id="player-shape">
-      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.16 2.22">
+    <svg id="player-shape" width="25" height="25" viewBox="0 0 6.16 2.22">
         <defs>
           <style>.cls-1{fill:red;}</style>
         </defs>
