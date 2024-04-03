@@ -13,14 +13,14 @@
             background-position: center center;
         }
 
-#player {
+#player-container {
   position: fixed;
   top: 90%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-#player img {
+#player-container img {
   width: 100px;
   height: auto;
 }
@@ -96,47 +96,47 @@ svg {
         <polygon class="st0" points="44.9,63.8 44.9,56.7 52.4,52.5 54.3,53.7 56.6,53.8 56.6,51.8 62.6,48.4 63.8,49.1 63.8,63.8 "/>
     </svg>
 
-    <script>
-        const player = document.getElementById('player');
-        const svgBarriers = document.getElementById('collision');
+<script>
+    const playerContainer = document.getElementById('player-container');
+    const svgBarriers = document.getElementById('collision');
 
-        function toggleFullscreenAndPlayAudio() {
-            const docElement = document.documentElement;
+    function toggleFullscreenAndPlayAudio() {
+        const docElement = document.documentElement;
 
-            if (docElement.requestFullscreen) {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                } else {
-                    docElement.requestFullscreen().catch(err => {
-                        console.error('Error attempting to enable fullscreen:', err);
-                    });
-                }
+        if (docElement.requestFullscreen) {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                docElement.requestFullscreen().catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                });
             }
-            document.getElementById('fullscreen-button').style.display = 'none';
         }
+        document.getElementById('fullscreen-button').style.display = 'none';
+    }
 
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', function (event) {
-                var y = event.beta;
-                var x = event.gamma;
-                var movementSpeedX = x * 0.1;
-                var movementSpeedY = y * 0.1;
-                var player = document.getElementById('player');
-                var newX = player.offsetLeft + movementSpeedX;
-                var newY = player.offsetTop + movementSpeedY;
-                var maxX = window.innerWidth - player.clientWidth;
-                var maxY = window.innerHeight - player.clientHeight;
-                newX = Math.min(Math.max(newX, 0), maxX);
-                newY = Math.min(Math.max(newY, 0), maxY);
-                player.style.left = newX + 'px';
-                player.style.top = newY + 'px';
-            });
-        } else {
-            alert("Device orientation is not supported on this device.");
-        }
-        if (!document.documentElement.requestFullscreen) {
-            document.getElementById('fullscreen-button').style.display = 'none';
-        }
-    </script>
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function (event) {
+            var y = event.beta;
+            var x = event.gamma;
+            var movementSpeedX = x * 0.1;
+            var movementSpeedY = y * 0.1;
+            var player = document.getElementById('player-container');
+            var newX = player.offsetLeft + movementSpeedX;
+            var newY = player.offsetTop + movementSpeedY;
+            var maxX = window.innerWidth - player.clientWidth;
+            var maxY = window.innerHeight - player.clientHeight;
+            newX = Math.min(Math.max(newX, 0), maxX);
+            newY = Math.min(Math.max(newY, 0), maxY);
+            player.style.left = newX + 'px';
+            player.style.top = newY + 'px';
+        });
+    } else {
+        alert("Device orientation is not supported on this device.");
+    }
+    if (!document.documentElement.requestFullscreen) {
+        document.getElementById('fullscreen-button').style.display = 'none';
+    }
+</script>
 </body>
 </html>
