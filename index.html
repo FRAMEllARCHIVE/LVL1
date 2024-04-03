@@ -67,7 +67,7 @@ svg {
 </head>
 <body>
 
-  <div id="player">
+  <div id="player-container">
     <img src="wisp.gif" alt="Player">
     <svg id="player-shape" width="25" height="25" viewBox="0 0 6.16 2.22">
         <defs>
@@ -98,7 +98,9 @@ svg {
 
 <script>
     const playerContainer = document.getElementById('player-container');
+    const player = document.getElementById('player-shape');
     const svgBarriers = document.getElementById('collision');
+    const playerSVG = document.getElementById('player-shape');
 
     function toggleFullscreenAndPlayAudio() {
         const docElement = document.documentElement;
@@ -121,19 +123,52 @@ svg {
             var x = event.gamma;
             var movementSpeedX = x * 0.1;
             var movementSpeedY = y * 0.1;
-            var player = document.getElementById('player-container');
-            var newX = player.offsetLeft + movementSpeedX;
-            var newY = player.offsetTop + movementSpeedY;
-            var maxX = window.innerWidth - player.clientWidth;
-            var maxY = window.innerHeight - player.clientHeight;
-            newX = Math.min(Math.max(newX, 0), maxX);
-            newY = Math.min(Math.max(newY, 0), maxY);
-            player.style.left = newX + 'px';
-            player.style.top = newY + 'px';
+            var playerX = playerContainer.offsetLeft + movementSpeedX;
+            var playerY = playerContainer.offsetTop + movementSpeedY;
+            var maxX = window.innerWidth - playerContainer.clientWidth;
+            var maxY = window.innerHeight - playerContainer.clientHeight;
+            var collisionDetected = false;
+
+            // Check collision with each barrier
+            for (let i = 0; i < svgBarriers.children.length; i++) {
+                const barrier = svgBarriers.children[i];
+                if (barrier.tagName === 'polygon') {
+                    const points = barrier.getAttribute('points').split(' ');
+                    const polygon = points.map(p => {
+                        const [x, y] = p.split(',');
+                        return {x: parseFloat(x), y: parseFloat(y)};
+                    });
+
+                    // Check if player is inside the polygon
+                    if (isInsidePolygon(playerX, playerY, polygon)) {
+                        collisionDetected = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!collisionDetected) {
+                playerContainer.style.left = Math.min(Math.max(playerX, 0), maxX) + 'px';
+                playerContainer.style.top = Math.min(Math.max(playerY, 0), maxY) + 'px';
+            }
         });
     } else {
         alert("Device orientation is not supported on this device.");
     }
+
+    function isInsidePolygon(x, y, polygon) {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i].x, yi = polygon[i].y;
+            const xj = polygon[j].x, yj = polygon[j].y;
+
+            const intersect = ((yi > y) !== (yj > y)) &&
+                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
     if (!document.documentElement.requestFullscreen) {
         document.getElementById('fullscreen-button').style.display = 'none';
     }
