@@ -29,14 +29,15 @@
             font-style: normal;
         }
 
-        svg {
-            width: 100vw;
-            opacity: 0.5;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+svg {
+  width: calc(min(100vw, 100vh));
+  opacity: 0.5;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 
         #fullscreen-button {
             position: fixed;
@@ -56,10 +57,24 @@
     </style>
 </head>
 <body>
-    <img id="player" src="wisp.gif" alt="Player">
+
+  <div id="player">
+    <img src="wisp.gif" alt="Player">
+    <svg id="player-shape">
+      <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.16 2.22">
+        <defs>
+          <style>.cls-1{fill:red;}</style>
+        </defs>
+        <title>player</title>
+        <ellipse class="cls-1" cx="3.08" cy="1.11" rx="3.08" ry="1.11"/>
+      </svg>
+    </svg>
+  </div>
+
+
     <div id="fullscreen-button" onclick="toggleFullscreenAndPlayAudio()"><br><br>PONDER</div>
 
-    <svg version="1.1" id="collision-barriers" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    <svg version="1.1" id="collision" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
          viewBox="0 0 63.8 63.8" style="enable-background:new 0 0 63.8 63.8;" xml:space="preserve">
         <style type="text/css">
             .st0 {
@@ -75,87 +90,7 @@
 
     <script>
         const player = document.getElementById('player');
-        const svgBarriers = document.getElementById('collision-barriers');
-
-        function getPolygonPoints(polygon) {
-            const pointsString = polygon.getAttribute('points');
-            return pointsString.split(' ').map(point => {
-                const [x, y] = point.split(',');
-                return { x: parseFloat(x), y: parseFloat(y) };
-            });
-        }
-
-        function pointInsidePolygon(point, polygonPoints) {
-            let inside = false;
-            for (let i = 0, j = polygonPoints.length - 1; i < polygonPoints.length; j = i++) {
-                const xi = polygonPoints[i].x, yi = polygonPoints[i].y;
-                const xj = polygonPoints[j].x, yj = polygonPoints[j].y;
-
-                const intersect = ((yi > point.y) != (yj > point.y)) &&
-                    (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
-                if (intersect) inside = !inside;
-            }
-            return inside;
-        }
-
-function handleCollision() {
-  const playerRect = player.getBoundingClientRect();
-  const svgPolygons = svgBarriers.querySelectorAll('polygon');
-  for (const polygon of svgPolygons) {
-    const polygonPoints = getPolygonPoints(polygon);
-
-    const playerPoints = [
-      { x: playerRect.left + playerRect.width / 2, y: playerRect.top }, // Center Top
-      { x: playerRect.right, y: playerRect.top + playerRect.height / 2 }, // Center Right
-      { x: playerRect.left, y: playerRect.top + playerRect.height / 2 }, // Center Left
-      { x: playerRect.left + playerRect.width / 2, y: playerRect.bottom }, // Center Bottom
-      { x: playerRect.left, y: playerRect.top }, // Top Left
-      { x: playerRect.right, y: playerRect.top }, // Top Right
-      { x: playerRect.left, y: playerRect.bottom }, // Bottom Left
-      { x: playerRect.right, y: playerRect.bottom }  // Bottom Right
-    ];
-
-    for (const point of playerPoints) {
-      if (pointInsidePolygon(point, polygonPoints)) {
-        const dx = calculateOverlapX(playerRect, polygonPoints);
-        const dy = calculateOverlapY(playerRect, polygonPoints);
-        const newX = point.x - dx;
-        const newY = point.y - dy;
-        player.style.left = `${newX}px`;
-        player.style.top = `${newY}px`;
-        return; // Exit after first collision
-      }
-    }
-  }
-}
-
-        setInterval(handleCollision, 10);
-
-function calculateOverlapX(playerRect, polygonPoints) {
-  let minOverlap = Infinity;
-  for (const point of polygonPoints) {
-    const distance = Math.abs(point.x - playerRect.left);
-    minOverlap = Math.min(minOverlap, distance);
-  }
-  return Math.min(minOverlap, Math.abs(playerRect.right - polygonPoints[0].x)); // Consider right edge too
-}
-
-function calculateOverlapY(playerRect, polygonPoints) {
-  let minOverlap = Infinity;
-  for (const point of polygonPoints) {
-    const distance = Math.abs(point.y - playerRect.top);
-minOverlap = Math.min(minOverlap, Math.abs(point.x - playerRect.left));
-
-  }
-  return Math.min(minOverlap, Math.abs(playerRect.bottom - polygonPoints[0].y)); // Consider bottom edge too
-}
-
-
-
-
-
-
-
+        const svgBarriers = document.getElementById('collision');
 
         function toggleFullscreenAndPlayAudio() {
             const docElement = document.documentElement;
