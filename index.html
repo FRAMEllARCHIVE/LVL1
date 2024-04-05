@@ -116,56 +116,47 @@
     }
 
     if (window.DeviceOrientationEvent) {
-  // Update the device orientation event listener
-window.addEventListener('deviceorientation', function(event) {
-    var y = event.beta;
-    var x = event.gamma;
-    var movementSpeedX = x * 0.1;
-    var movementSpeedY = y * 0.1;
-    
-    // Calculate the new player position relative to its current position
-    var playerRect = playerContainer.getBoundingClientRect();
-    var playerX = playerRect.left + movementSpeedX;
-    var playerY = playerRect.top + movementSpeedY;
+        window.addEventListener('deviceorientation', function (event) {
+            var y = event.beta;
+            var x = event.gamma;
+            var movementSpeedX = x * 0.1;
+            var movementSpeedY = y * 0.1;
+            var playerX = playerContainer.offsetLeft + movementSpeedX;
+            var playerY = playerContainer.offsetTop + movementSpeedY;
+            var maxX = window.innerWidth - playerContainer.clientWidth;
+            var maxY = window.innerHeight - playerContainer.clientHeight;
+            var collisionDetected = false;
 
-    var maxX = window.innerWidth - playerRect.width;
-    var maxY = window.innerHeight - playerRect.height;
-    var collisionDetected = false;
+            // Check collision with each barrier
+            for (let i = 0; i < svgBarriers.children.length; i++) {
+                const barrier = svgBarriers.children[i];
+                if (barrier.tagName === 'polygon') {
+                    const points = barrier.getAttribute('points').split(' ');
+                    const polygon = points.map(p => {
+                        const [x, y] = p.split(',');
+                        return {x: parseFloat(x), y: parseFloat(y)};
+                    });
 
-    // Check collision with each barrier
-    for (let i = 0; i < svgBarriers.children.length; i++) {
-        const barrier = svgBarriers.children[i];
-        if (barrier.tagName === 'polygon') {
-            const points = barrier.getAttribute('points').split(' ');
-            const polygon = points.map(p => {
-                const [x, y] = p.split(',');
-                return {
-                    x: parseFloat(x),
-                    y: parseFloat(y)
-                };
-            });
-
-            // Check if player is inside the polygon
-            if (isInsidePolygon(playerX, playerY, polygon)) {
-                collisionDetected = true;
-                break;
+                    // Check if player is inside the polygon
+                    if (isInsidePolygon(playerX, playerY, polygon)) {
+                        collisionDetected = true;
+                        break;
+                    }
+                }
             }
-        }
-    }
 
-    if (!collisionDetected) {
-        // Ensure the player does not go beyond the boundaries
-        playerX = Math.min(Math.max(playerX, 0), maxX);
-        playerY = Math.min(Math.max(playerY, 0), maxY);
+            if (!collisionDetected) {
+                // Ensure the player does not go beyond the boundaries
+                playerX = Math.min(Math.max(playerX, 0), maxX);
+                playerY = Math.min(Math.max(playerY, 0), maxY);
 
-        playerContainer.style.left = playerX + 'px';
-        playerContainer.style.top = playerY + 'px';
-    }
+                playerContainer.style.left = playerX + 'px';
+                playerContainer.style.top = playerY + 'px';
+            }
 
-    // Debug collision detection
-    debugCollision(playerX, playerY, collisionDetected);
-});
-
+            // Debug collision detection
+            debugCollision(playerX, playerY, collisionDetected);
+        });
     } else {
         alert("Device orientation is not supported on this device.");
     }
