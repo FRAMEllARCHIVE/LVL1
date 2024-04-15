@@ -1,6 +1,6 @@
 {
-  "name": "ARCHIVE",  
-  "short_name": "FRAME",
+  "name": "LVL1",  
+  "short_name": LVL1",
   "icons": [
     {
       "src": "icon-192x192.png",
@@ -13,6 +13,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "https://frame-archive.online/",
+  "start_url": ".",
+    "theme_color": "#ffffff",
   "display": "standalone"
 }
