@@ -46,65 +46,61 @@ window.addEventListener('devicemotion', function (event) {
     movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
 });
 
-document.addEventListener('click', function (event) {
-    const playerSvg = document.getElementById('player');
-    const playerRect = playerSvg.getBoundingClientRect();
+    document.addEventListener('click', function (event) {
+        const playerSvg = document.getElementById('player');
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    const targetX = event.clientX;
-    const targetY = event.clientY;
+        const targetX = event.clientX;
+        const targetY = event.clientY;
 
-    const playerX = playerRect.left + playerRect.width / 2;
-    const playerY = playerRect.top + playerRect.height / 2;
+        const diffX = targetX - playerX;
+        const diffY = targetY - playerY;
 
-    const diffX = targetX - playerX;
-    const diffY = targetY - playerY;
+        const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
+        const normalizedX = (diffX / magnitude) * 10; 
+        const normalizedY = (diffY / magnitude) * 10; 
 
-    const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
-    const normalizedX = (diffX / magnitude) * 10; 
-    const normalizedY = (diffY / magnitude) * 10; 
+        movePlayer(normalizedX, normalizedY);
+    });
 
-    movePlayer(normalizedX, normalizedY);
-});
+    function movePlayer(velocityX, velocityY) {
+        const playerSvg = document.getElementById('player');
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-function movePlayer(velocityX, velocityY) {
-    const playerSvg = document.getElementById('player');
-    const playerRect = playerSvg.getBoundingClientRect();
+        playerX += velocityX;
+        playerY += velocityY;
 
-    let playerX = playerRect.left + velocityX;
-    let playerY = playerRect.top + velocityY;
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 100;
+        playerX = Math.max(0, Math.min(playerX, maxX));
+        playerY = Math.max(0, Math.min(playerY, maxY));
 
-    const maxX = window.innerWidth - playerRect.width;
-    const maxY = window.innerHeight - playerRect.height;
+        playerSvg.style.left = playerX + 'px';
+        playerSvg.style.top = playerY + 'px';
 
-    playerX = Math.max(0, Math.min(playerX, maxX));
-    playerY = Math.max(0, Math.min(playerY, maxY));
+        checkCollision();
+    }
 
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
+    function checkCollision() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerCenterX = parseFloat(playerSvg.style.left.replace('px', '')) + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = parseFloat(playerSvg.style.top.replace('px', '')) + parseFloat(playerCircle.getAttribute('cy'));
 
-    checkCollision();
-}
+        const obstacles = document.querySelectorAll('#obstacles path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
 
-function checkCollision() {
-    const playerSvg = document.getElementById('player');
-    const playerCircle = playerSvg.querySelector('circle');
-    const playerRect = playerSvg.getBoundingClientRect();
-
-    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-    const obstacles = document.querySelectorAll('#obstacles path');
-    const svg = document.querySelector('svg');
-    const point = svg.createSVGPoint();
-    point.x = playerCenterX;
-    point.y = playerCenterY;
-
-    for (let obstacle of obstacles) {
-        if (obstacle.isPointInFill(point)) {
-            console.log('Collision detected with ' + obstacle.id);
+        for (let obstacle of obstacles) {
+            if (obstacle.isPointInFill(point)) {
+                console.log('Collision detected with ' + obstacle.id);
+            }
         }
     }
-}
 </script>
 
 </body>
