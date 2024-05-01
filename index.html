@@ -41,7 +41,7 @@
 
 <script>
     window.addEventListener('devicemotion', function (event) {
-        movePlayer(-event.accelerationIncludingGravity.y * 2, event.accelerationIncludingGravity.x * 2);
+        movePlayer(event.accelerationIncludingGravity.y * 2, -event.accelerationIncludingGravity.x * 2);
     });
 
     document.addEventListener('click', function (event) {
@@ -96,7 +96,6 @@
         for (let obstacle of obstacles) {
             if (obstacle.isPointInFill(point)) {
                 console.log('Collision detected with ' + obstacle.id);
-                // Optionally, you can handle what happens on collision, e.g., game over, losing points, etc.
             }
         }
     }
