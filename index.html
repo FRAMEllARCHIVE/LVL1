@@ -20,8 +20,8 @@
             position: absolute;
         }
         #player {
-            width: 22px;
-            height: 22px;
+            width: 100px;
+            height: 100px;
         }
         #obstacles {
             width: 100vw;
@@ -42,9 +42,9 @@
 </svg>
 
 <script>
-    window.addEventListener('devicemotion', function (event) {
-        movePlayer(event.accelerationIncludingGravity.y * 2, -event.accelerationIncludingGravity.x * 2);
-    });
+window.addEventListener('devicemotion', function (event) {
+    movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+});
 
     document.addEventListener('click', function (event) {
         const playerSvg = document.getElementById('player');
