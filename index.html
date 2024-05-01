@@ -18,8 +18,8 @@
             position: absolute;
         }
         #player {
-            width: 100px;
-            height: 100px;
+            width: 11px;
+            height: 11px;
         }
         #obstacles {
             width: 100%;
@@ -40,9 +40,8 @@
 
 <script>
     window.addEventListener('devicemotion', function (event) {
-        movePlayer(event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
-    });
-
+    movePlayer(-event.accelerationIncludingGravity.y * 2, event.accelerationIncludingGravity.x * 2);
+});
     document.addEventListener('click', function (event) {
         const playerSvg = document.getElementById('player');
         let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
