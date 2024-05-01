@@ -1,100 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PONDER</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             overflow: hidden;
             background: black url("level.webp") no-repeat center center fixed;
-            background-size: cover;
+            background-size: contain;
+            position: relative;
+            height: 100vh;
+            margin: 0;
+            cursor: pointer; /* Indicates interactive */
         }
-
-        #player-container {
+        svg {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
         }
-
-        #player-container img {
+        #player {
             width: 100px;
-            height: auto;
+            height: 100px;
         }
-
-        #fullscreen-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.5);
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            z-index: 2;
-        }
-
-        #fullscreen-button:hover {
-            background-color: rgba(255, 255, 255, 0.8);
+        #obstacles {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
 
-<div id="player-container">
-    <img src="wisp.gif" alt="Player">
-</div>
+<svg id="player" style="left:50%; top:50%; transform:translate(-50%, -50%);">
+    <circle cx="50" cy="50" r="50" fill="blue"/>
+</svg>
 
-<div id="fullscreen-button" onclick="toggleFullscreen()">
-    Toggle Fullscreen
-</div>
+<svg id="obstacles">
+    <path id="obstacle1" d="M0 0 L0 63.78 17.07 63.78 17.07 61.19 29.5 60.5 29.5 57.18 31.89 57.18 33.81 56.69 33.81 53.75 37.34 53.16 37.34 50.42 33.71 49.84 51.14 44.55 51.14 42.4 52.21 42.4 52.21 40.34 54.07 40.34 54.07 38.68 55.74 38.68 55.74 36.72 60.83 36.72 60.83 34.37 63.78 34.37 Z"/>
+    <path id="obstacle2" d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
+</svg>
 
 <script>
-    // Function to toggle fullscreen
-    function toggleFullscreen() {
-        const docElement = document.documentElement;
-        if (!document.fullscreenElement) {
-            docElement.requestFullscreen().catch(err => {
-                console.error('Error attempting to enable fullscreen:', err);
-            });
-        } else {
-            document.exitFullscreen();
+    window.addEventListener('devicemotion', function (event) {
+        movePlayer(event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+    });
+
+    document.addEventListener('click', function (event) {
+        const playerSvg = document.getElementById('player');
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+
+        const targetX = event.clientX;
+        const targetY = event.clientY;
+
+        const diffX = targetX - playerX;
+        const diffY = targetY - playerY;
+
+        const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
+        const normalizedX = (diffX / magnitude) * 10; 
+        const normalizedY = (diffY / magnitude) * 10; 
+
+        movePlayer(normalizedX, normalizedY);
+    });
+
+    function movePlayer(velocityX, velocityY) {
+        const playerSvg = document.getElementById('player');
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+
+        playerX += velocityX;
+        playerY += velocityY;
+
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 100;
+        playerX = Math.max(0, Math.min(playerX, maxX));
+        playerY = Math.max(0, Math.min(playerY, maxY));
+
+        playerSvg.style.left = playerX + 'px';
+        playerSvg.style.top = playerY + 'px';
+
+        checkCollision();
+    }
+
+function checkCollision() {
+    const playerSvg = document.getElementById('player');
+    const playerCircle = playerSvg.querySelector('circle');
+    const playerCenterX = parseFloat(playerSvg.style.left.replace('px', '')) + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = parseFloat(playerSvg.style.top.replace('px', '')) + parseFloat(playerCircle.getAttribute('cy'));
+
+    const obstacles = document.querySelectorAll('#obstacles path');
+    const svg = document.querySelector('svg');
+    const point = svg.createSVGPoint();
+    point.x = playerCenterX;
+    point.y = playerCenterY;
+
+    for (let obstacle of obstacles) {
+        if (obstacle.isPointInFill(point)) {
+            console.log('Collision detected with ' + obstacle.id);
         }
     }
+}
 
-    // Check for fullscreen support and hide button if not supported
-    if (!document.documentElement.requestFullscreen) {
-        document.getElementById('fullscreen-button').style.display = 'none';
-    }
-
-    // Code for controlling player movement based on device orientation
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function (event) {
-            const playerContainer = document.getElementById('player-container');
-            const maxX = window.innerWidth - playerContainer.clientWidth;
-            const maxY = window.innerHeight - playerContainer.clientHeight;
-
-            // Using event.gamma for horizontal movement and event.beta for vertical movement
-            const movementSpeedX = event.gamma * 0.1;
-            const movementSpeedY = event.beta * 0.1;
-
-            let playerX = playerContainer.offsetLeft + movementSpeedX;
-            let playerY = playerContainer.offsetTop + movementSpeedY;
-
-            // Ensure the player does not go beyond the boundaries
-            playerX = Math.min(Math.max(playerX, 0), maxX);
-            playerY = Math.min(Math.max(playerY, 0), maxY);
-
-            playerContainer.style.left = playerX + 'px';
-            playerContainer.style.top = playerY + 'px';
-        });
-    } else {
-        alert("Device orientation is not supported on this device.");
-    }
 </script>
 
 </body>
