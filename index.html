@@ -95,8 +95,8 @@ function movePlayer(velocityX, velocityY) {
     playerX += velocityX;
     playerY += velocityY;
 
-    const maxX = window.innerWidth;
-    const maxY = window.innerHeight;
+    const maxX = window.innerWidth - 11;
+    const maxY = window.innerHeight - 11;
     playerX = Math.max(0, Math.min(playerX, maxX));
     playerY = Math.max(0, Math.min(playerY, maxY));
 
