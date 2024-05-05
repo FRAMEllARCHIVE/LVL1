@@ -92,26 +92,39 @@ function movePlayer(velocityX, velocityY) {
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    playerX += velocityX;
-    playerY += velocityY;
+    // Check horizontal movement
+    playerSvg.style.left = (playerX + velocityX) + 'px';
+    if (checkCollision()) {
+        // Revert horizontal movement if collision
+        playerSvg.style.left = playerX + 'px';
+    } else {
+        // Adjust X within viewport limits
+        const maxX = window.innerWidth - 11;
+        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
+    }
 
-    const maxX = window.innerWidth - 11;
-    const maxY = window.innerHeight - 11;
-    playerX = Math.max(0, Math.min(playerX, maxX));
-    playerY = Math.max(0, Math.min(playerY, maxY));
+    // Check vertical movement
+    playerSvg.style.top = (playerY + velocityY) + 'px';
+    if (checkCollision()) {
+        // Revert vertical movement if collision
+        playerSvg.style.top = playerY + 'px';
+    } else {
+        // Adjust Y within viewport limits
+        const maxY = window.innerHeight - 11;
+        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
+    }
 
+    // Update player position to the last valid location
     playerSvg.style.left = playerX + 'px';
     playerSvg.style.top = playerY + 'px';
-
-    checkCollision();
 }
 
 function checkCollision() {
-const playerSvg = document.getElementById('player');
-const playerCircle = playerSvg.querySelector('circle');
-const playerRect = playerSvg.getBoundingClientRect();
-const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+    const playerSvg = document.getElementById('player');
+    const playerCircle = playerSvg.querySelector('circle');
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
     const obstacles = document.querySelectorAll('#obstacles path');
     const svg = document.querySelector('svg');
@@ -124,9 +137,13 @@ const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'
         const transformedPoint = point.matrixTransform(transform);
         if (obstacle.isPointInFill(transformedPoint)) {
             console.log('Collision detected with ' + obstacle.id);
+            return true; // Collision detected
         }
     }
+    return false; // No collision detected
 }
+
+
 
 </script>
 
