@@ -115,6 +115,8 @@ function movePlayerTowards(playerSvg, velocityX, velocityY, duration) {
 }
 
 function movePlayer(velocityX, velocityY) {
+    velocityX *= 0.5;
+    velocityY *= 0.5;
     const playerSvg = document.getElementById('player');
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
