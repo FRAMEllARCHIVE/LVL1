@@ -63,7 +63,9 @@
     <path id="obstacle2" d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
 </svg>
 
+
 <script>
+
 window.addEventListener('devicemotion', function (event) {
     movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
 });
@@ -129,7 +131,7 @@ function movePlayer(velocityX, velocityY) {
     if (checkCollision()) {
         playerSvg.style.top = playerY + 'px';
     } else {
-        const maxY = window.innerHeight - 11;
+        const maxY = window.innerHeight - 12;
         playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
     }
 
