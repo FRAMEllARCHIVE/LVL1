@@ -40,9 +40,9 @@
 
         #player {
             position: absolute;
-            top: 90%;
-            left: 55%;
-            transform: translate(-50%, -50%);
+            bottom: 5%;
+            left: 50%;
+            transform: translate(-50%, 50%);
         }
 
     </style>
@@ -70,7 +70,7 @@
             var currentY = parseFloat(player.style.top);
             
             player.style.left = (currentX + moveX) + 'px';
-            player.style.top = (currentY + moveY) + 'px';
+            player.style.top = (currentY - moveY) + 'px'; // Invert Y axis to match device orientation
         }
         
         window.addEventListener('devicemotion', updatePlayerPosition);
