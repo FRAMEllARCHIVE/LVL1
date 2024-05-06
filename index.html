@@ -70,11 +70,11 @@
             prevX = accelerationX;
             prevY = accelerationY;
 
-            var currentX = parseFloat(player.style.left);
-            var currentY = parseFloat(player.style.top);
+            var currentX = parseFloat(player.getAttribute('x'));
+            var currentY = parseFloat(player.getAttribute('y'));
 
-            player.style.left = (currentX + moveX) + 'px';
-            player.style.top = (currentY - moveY) + 'px'; // Invert Y axis to match device orientation
+            player.setAttribute('x', currentX + moveX);
+            player.setAttribute('y', currentY + moveY);
         }
 
         window.addEventListener('devicemotion', updatePlayerPosition);
