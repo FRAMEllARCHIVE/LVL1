@@ -63,7 +63,6 @@
     <path id="obstacle2" d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
 </svg>
 
-
 <script>
 window.addEventListener('devicemotion', function (event) {
     movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
@@ -71,8 +70,8 @@ window.addEventListener('devicemotion', function (event) {
 
 document.addEventListener('click', function (event) {
     const playerSvg = document.getElementById('player');
-    let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-    let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+    const playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+    const playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
     const targetX = event.clientX;
     const targetY = event.clientY;
@@ -81,40 +80,59 @@ document.addEventListener('click', function (event) {
     const diffY = targetY - playerY;
 
     const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
-    const normalizedX = (diffX / magnitude) * 10;
-    const normalizedY = (diffY / magnitude) * 10;
+    const normalizedX = (diffX / magnitude) * 0.5;
+    const normalizedY = (diffY / magnitude) * 0.5;
 
-    movePlayer(normalizedX, normalizedY);
+    movePlayerTowards(playerSvg, normalizedX, normalizedY, 1111); 
 });
+
+function movePlayerTowards(playerSvg, velocityX, velocityY, duration) {
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerX = playerRect.left + playerRect.width / 2;
+    const playerY = playerRect.top + playerRect.height / 2;
+
+    const startX = playerX;
+    const startY = playerY;
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+
+        const nextX = startX + velocityX * progress;
+        const nextY = startY + velocityY * progress;
+
+        movePlayer(nextX - playerX, nextY - playerY);
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
 
 function movePlayer(velocityX, velocityY) {
     const playerSvg = document.getElementById('player');
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    // Check horizontal movement
     playerSvg.style.left = (playerX + velocityX) + 'px';
     if (checkCollision()) {
-        // Revert horizontal movement if collision
         playerSvg.style.left = playerX + 'px';
     } else {
-        // Adjust X within viewport limits
-        const maxX = window.innerWidth - 11;
+        const maxX = window.innerWidth - 12;
         playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
     }
 
-    // Check vertical movement
     playerSvg.style.top = (playerY + velocityY) + 'px';
     if (checkCollision()) {
-        // Revert vertical movement if collision
         playerSvg.style.top = playerY + 'px';
     } else {
-        // Adjust Y within viewport limits
         const maxY = window.innerHeight - 11;
         playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
     }
 
-    // Update player position to the last valid location
     playerSvg.style.left = playerX + 'px';
     playerSvg.style.top = playerY + 'px';
 }
@@ -136,14 +154,11 @@ function checkCollision() {
         const transform = obstacle.getScreenCTM().inverse();
         const transformedPoint = point.matrixTransform(transform);
         if (obstacle.isPointInFill(transformedPoint)) {
-            console.log('Collision detected with ' + obstacle.id);
-            return true; // Collision detected
+            return true;
         }
     }
-    return false; // No collision detected
+    return false; 
 }
-
-
 
 </script>
 
