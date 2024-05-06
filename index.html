@@ -5,164 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PONDER</title>
     <style>
-
         body {
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
             overflow: hidden;
             margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             cursor: pointer;
+            background-color: black;
+        }
+
+        .game-container {
+            position: relative;
+            width: 90vmin;
+            height: 90vmin;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
         }
 
         .background-container {
-            overflow: hidden;
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: black url("level.webp") no-repeat center center fixed;
+            background: black url("level.webp") no-repeat center center;
             background-size: contain;
             z-index: -1;
         }
 
-        svg {
-            position: absolute;
-        }
-
         #player {
-            overflow: hidden;
-            width: 22px;
-            height: 22px;
-        }
-
-        #obstacles {
-            overflow: hidden;
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            position: absolute;
+            top: 90%;
+            left: 55%;
             transform: translate(-50%, -50%);
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
         }
 
     </style>
 </head>
 <body>
+    <div class="game-container">
+        <div class="background-container"></div>
+        <svg id="player" width="22" height="22">
+            <circle cx="11" cy="11" r="11" fill="blue"/>
+        </svg>
+    </div>
 
-<div class="background-container"></div>
+    <script>
 
-<svg id="player" style="left:50%; top:50%; transform:translate(-50%, -50%);">
-    <circle cx="11" cy="11" r="11" fill="blue"/>
-</svg>
+        var player = document.getElementById('player');
+        
+        function updatePlayerPosition(event) {
+            var accelerationX = event.accelerationIncludingGravity.x;
+            var accelerationY = event.accelerationIncludingGravity.y;
 
-<svg id="obstacles" width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet">
-    <path id="obstacle1" d="M0 0 0 63.78 17.07 63.78 17.07 61.19 29.5 60.5 29.5 57.18 31.89 57.18 33.81 56.69 33.81 53.75 37.34 53.16 37.34 50.42 33.71 49.84 51.14 44.55 51.14 42.4 52.21 42.4 52.21 40.34 54.07 40.34 54.07 38.68 55.74 38.68 55.74 36.72 60.83 36.72 60.83 34.37 63.78 34.37 63.78 0 0 0 Z"/>
-    <path id="obstacle2" d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
-</svg>
+            var moveX = accelerationX * 5;
+            var moveY = accelerationY * 5; 
 
-
-<script>
-
-window.addEventListener('devicemotion', function (event) {
-    movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
-});
-
-document.addEventListener('click', function (event) {
-    const playerSvg = document.getElementById('player');
-    const playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-    const playerY = parseFloat(playerSvg.style.top.replace('px', ''));
-
-    const targetX = event.clientX;
-    const targetY = event.clientY;
-
-    const diffX = targetX - playerX;
-    const diffY = targetY - playerY;
-
-    const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
-    const normalizedX = (diffX / magnitude) * 0.5;
-    const normalizedY = (diffY / magnitude) * 0.5;
-
-    movePlayerTowards(playerSvg, normalizedX, normalizedY, 1111); 
-});
-
-function movePlayerTowards(playerSvg, velocityX, velocityY, duration) {
-    const playerRect = playerSvg.getBoundingClientRect();
-    const playerX = playerRect.left + playerRect.width / 2;
-    const playerY = playerRect.top + playerRect.height / 2;
-
-    const startX = playerX;
-    const startY = playerY;
-    const startTime = performance.now();
-
-    function animate(currentTime) {
-        const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / duration, 1);
-
-        const nextX = startX + velocityX * progress;
-        const nextY = startY + velocityY * progress;
-
-        movePlayer(nextX - playerX, nextY - playerY);
-
-        if (progress < 1) {
-            requestAnimationFrame(animate);
+            var currentX = parseFloat(player.style.left);
+            var currentY = parseFloat(player.style.top);
+            
+            player.style.left = (currentX + moveX) + 'px';
+            player.style.top = (currentY + moveY) + 'px';
         }
-    }
-
-    requestAnimationFrame(animate);
-}
-
-function movePlayer(velocityX, velocityY) {
-    const playerSvg = document.getElementById('player');
-    let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-    let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
-
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.left = playerX + 'px';
-    } else {
-        const maxX = window.innerWidth + 16;
-        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
-    }
-
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.top = playerY + 'px';
-    } else {
-        const maxY = window.innerHeight - 12;
-        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
-    }
-
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
-}
-
-function checkCollision() {
-    const playerSvg = document.getElementById('player');
-    const playerCircle = playerSvg.querySelector('circle');
-    const playerRect = playerSvg.getBoundingClientRect();
-    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-    const obstacles = document.querySelectorAll('#obstacles path');
-    const svg = document.querySelector('svg');
-    const point = svg.createSVGPoint();
-    point.x = playerCenterX;
-    point.y = playerCenterY;
-
-    for (let obstacle of obstacles) {
-        const transform = obstacle.getScreenCTM().inverse();
-        const transformedPoint = point.matrixTransform(transform);
-        if (obstacle.isPointInFill(transformedPoint)) {
-            return true;
-        }
-    }
-    return false; 
-}
-
-</script>
-
+        
+        window.addEventListener('devicemotion', updatePlayerPosition);
+    </script>
 </body>
 </html>
