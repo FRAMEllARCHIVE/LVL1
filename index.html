@@ -123,7 +123,7 @@ function movePlayer(velocityX, velocityY) {
     if (checkCollision()) {
         playerSvg.style.left = playerX + 'px';
     } else {
-        const maxX = window.innerWidth + 16;
+        const maxX = window.innerWidth;
         playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
     }
 
@@ -131,7 +131,7 @@ function movePlayer(velocityX, velocityY) {
     if (checkCollision()) {
         playerSvg.style.top = playerY + 'px';
     } else {
-        const maxY = window.innerHeight - 12;
+        const maxY = window.innerHeight;
         playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
     }
 
