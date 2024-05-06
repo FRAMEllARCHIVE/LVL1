@@ -57,12 +57,18 @@
 
     <script>
         var player = document.getElementById('player');
-        var prevX = 0;
-        var prevY = 0;
+        var prevX = null;
+        var prevY = null;
 
         function updatePlayerPosition(event) {
             var accelerationX = event.accelerationIncludingGravity.x;
             var accelerationY = event.accelerationIncludingGravity.y;
+
+            if (prevX === null && prevY === null) {
+                prevX = accelerationX;
+                prevY = accelerationY;
+                return;
+            }
 
             var moveX = accelerationX - prevX;
             var moveY = accelerationY - prevY;
@@ -70,11 +76,11 @@
             prevX = accelerationX;
             prevY = accelerationY;
 
-            var currentX = parseFloat(player.getAttribute('x'));
-            var currentY = parseFloat(player.getAttribute('y'));
+            var currentX = parseFloat(player.style.left);
+            var currentY = parseFloat(player.style.top);
 
-            player.setAttribute('x', currentX + moveX);
-            player.setAttribute('y', currentY + moveY);
+            player.style.left = (currentX + moveX) + 'px';
+            player.style.top = (currentY - moveY) + 'px'; // Invert Y axis to match device orientation
         }
 
         window.addEventListener('devicemotion', updatePlayerPosition);
