@@ -51,28 +51,32 @@
     <div class="game-container">
         <div class="background-container"></div>
         <svg id="player" width="22" height="22">
-            <circle cx="11" cy="11" r="11" fill="blue"/>
+            <circle cx="11" cy="11" r="10" fill="blue"/>
         </svg>
     </div>
 
     <script>
-
         var player = document.getElementById('player');
-        
+        var prevX = 0;
+        var prevY = 0;
+
         function updatePlayerPosition(event) {
             var accelerationX = event.accelerationIncludingGravity.x;
             var accelerationY = event.accelerationIncludingGravity.y;
 
-            var moveX = accelerationX * 5;
-            var moveY = accelerationY * 5; 
+            var moveX = accelerationX - prevX;
+            var moveY = accelerationY - prevY;
+
+            prevX = accelerationX;
+            prevY = accelerationY;
 
             var currentX = parseFloat(player.style.left);
             var currentY = parseFloat(player.style.top);
-            
+
             player.style.left = (currentX + moveX) + 'px';
             player.style.top = (currentY - moveY) + 'px'; // Invert Y axis to match device orientation
         }
-        
+
         window.addEventListener('devicemotion', updatePlayerPosition);
     </script>
 </body>
