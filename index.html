@@ -36,6 +36,9 @@
             overflow: hidden;
             width: 90%;
             height: 90%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         #obstacles {
@@ -78,43 +81,30 @@ function movePlayer(velocityX, velocityY) {
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.left = playerX + 'px';
-    } else {
-        const maxX = window.innerWidth;
-        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
-    }
+    const maxX = window.innerWidth;
+    const maxY = window.innerHeight;
 
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.top = playerY + 'px';
-    } else {
-        const maxY = window.innerHeight;
-        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
-    }
+    let newX = playerX + velocityX;
+    let newY = playerY + velocityY;
 
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
+    if (newX > 11 && newX < maxX && newY > 11 && newY < maxY && !checkCollision(newX, newY)) {
+        playerSvg.style.left = newX + 'px';
+        playerSvg.style.top = newY + 'px';
+    }
 }
 
-function checkCollision() {
+function checkCollision(newX, newY) {
     const playerSvg = document.getElementById('player');
     const playerCircle = playerSvg.querySelector('circle');
-    const playerRect = playerSvg.getBoundingClientRect();
-    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+    const playerCenterX = newX + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = newY + parseFloat(playerCircle.getAttribute('cy'));
 
     const obstacles = document.querySelectorAll('#obstacles path');
-    const svg = document.querySelector('svg');
-    const point = svg.createSVGPoint();
-    point.x = playerCenterX;
-    point.y = playerCenterY;
 
     for (let obstacle of obstacles) {
-        const transform = obstacle.getScreenCTM().inverse();
-        const transformedPoint = point.matrixTransform(transform);
-        if (obstacle.isPointInFill(transformedPoint)) {
+        const bbox = obstacle.getBBox();
+        if (playerCenterX >= bbox.x && playerCenterX <= bbox.x + bbox.width &&
+            playerCenterY >= bbox.y && playerCenterY <= bbox.y + bbox.height) {
             return true;
         }
     }
