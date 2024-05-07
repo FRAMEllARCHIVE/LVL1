@@ -60,19 +60,35 @@
     <circle cx="11" cy="11" r="11" fill="blue"/>
 </svg>
 
-<svg id="obstacles" width="90%" height="90%" viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet">
+<svg id="obstacles" width="90%" height="90%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
     <path d="M10,10 h40 v20 h-20 z" fill="red"/>
 </svg>
 
-<svg id="startingposition" width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet">
+<svg id="startingposition" width="100%" height="100%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
     <circle cx="41" cy="55" r="1" fill="blue"/>
 </svg>
 
 <script>
 
-window.addEventListener('devicemotion', function (event) {
-    movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+document.addEventListener('DOMContentLoaded', function () {
+    setInitialPlayerPosition();
+    window.addEventListener('devicemotion', function (event) {
+        movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+    });
 });
+
+function setInitialPlayerPosition() {
+    const svgContainer = document.querySelector('.background-container');
+    const viewBoxScaleX = svgContainer.clientWidth / 64;
+    const viewBoxScaleY = svgContainer.clientHeight / 64;
+
+    const startX = 41 * viewBoxScaleX;
+    const startY = 55 * viewBoxScaleY;
+
+    const playerSvg = document.getElementById('player');
+    playerSvg.style.left = `calc(50% + ${startX - 11}px)`;
+    playerSvg.style.top = `calc(50% + ${startY - 11}px)`;
+}
 
 function movePlayer(velocityX, velocityY) {
     velocityX *= 0.1;
