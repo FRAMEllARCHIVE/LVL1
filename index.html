@@ -61,8 +61,6 @@
 </svg>
 
 <svg id="obstacles" width="90%" height="90%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
-                <path id="obstacle1" d="M0 0 0 63.78 17.07 63.78 17.07 61.19 29.5 60.5 29.5 57.18 31.89 57.18 33.81 56.69 33.81 53.75 37.34 53.16 37.34 50.42 33.71 49.84 51.14 44.55 51.14 42.4 52.21 42.4 52.21 40.34 54.07 40.34 54.07 38.68 55.74 38.68 55.74 36.72 60.83 36.72 60.83 34.37 63.78 34.37 63.78 0 0 0 Z"/>
-                <path id="obstacle2" d="M44.87 63.78 L44.87 56.69 52.41 52.48 54.27 53.75 56.62 53.85 56.62 51.79 62.59 48.37 63.78 49.15 63.78 63.78 44.87 63.78 Z"/>
 </svg>
 
 
@@ -79,25 +77,21 @@ function movePlayer(velocityX, velocityY) {
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.left = playerX + 'px';
-    } else {
-        const maxX = window.innerWidth;
-        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
-    }
+    const newX = playerX + velocityX;
+    const newY = playerY + velocityY;
 
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.top = playerY + 'px';
-    } else {
-        const maxY = window.innerHeight;
-        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
-    }
+    const maxX = window.innerWidth - 11;
+    const maxY = window.innerHeight - 11;
 
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
+    const boundedX = Math.max(11, Math.min(newX, maxX));
+    const boundedY = Math.max(11, Math.min(newY, maxY));
+
+    if (!checkCollision()) {
+        playerSvg.style.left = boundedX + 'px';
+        playerSvg.style.top = boundedY + 'px';
+    }
 }
+
 
 function checkCollision() {
     const playerSvg = document.getElementById('player');
