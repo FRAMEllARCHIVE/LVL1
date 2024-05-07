@@ -86,9 +86,10 @@ function setInitialPlayerPosition() {
     const startY = 55 * viewBoxScaleY;
 
     const playerSvg = document.getElementById('player');
-    playerSvg.style.left = `calc(50% + ${startX - 11}px)`;
+    playerSvg.style.left = `calc(50% + ${startX - 11}px)`; // 11 is the radius of the player
     playerSvg.style.top = `calc(50% + ${startY - 11}px)`;
 }
+
 
 function movePlayer(velocityX, velocityY) {
     velocityX *= 0.1;
