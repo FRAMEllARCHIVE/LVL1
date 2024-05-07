@@ -73,7 +73,6 @@
 
 
         <svg id="obstacles" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
-            <path d="M10,10 h40 v20 h-20 z" fill="red"/>
         </svg>
     </div>
 
@@ -88,6 +87,10 @@ function movePlayer(velocityX, velocityY) {
     velocityX *= 0.1;
     velocityY *= 0.1;
     const playerSvg = document.getElementById('player');
+
+    const centerX = (window.innerWidth - playerSvg.getBoundingClientRect().width) / 2;
+    const centerY = (window.innerHeight - playerSvg.getBoundingClientRect().height) / 2;
+    
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
