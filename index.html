@@ -120,7 +120,7 @@ function checkCollision() {
     const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
     const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
-    const obstacles = document.querySelectorAll('#obstacles path, #obstacles rect');
+    const obstacles = document.querySelectorAll('#obstacles path');
     const svg = document.querySelector('svg');
     const point = svg.createSVGPoint();
     point.x = playerCenterX;
