@@ -71,44 +71,49 @@
 <script>
 
 window.addEventListener('devicemotion', function (event) {
-    movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+    movePlayer(-event.accelerationIncludingGravity.x * 0.1, event.accelerationIncludingGravity.y * 0.1);
 });
 
 function movePlayer(velocityX, velocityY) {
-    velocityX *= 0.1;
-    velocityY *= 0.1;
     const playerSvg = document.getElementById('player');
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    const maxX = window.innerWidth;
-    const maxY = window.innerHeight;
+    playerX += velocityX;
+    playerY += velocityY;
 
-    let newX = playerX + velocityX;
-    let newY = playerY + velocityY;
+    const maxX = window.innerWidth - playerSvg.clientWidth;
+    const maxY = window.innerHeight - playerSvg.clientHeight;
 
-    if (newX > 11 && newX < maxX && newY > 11 && newY < maxY && !checkCollision(newX, newY)) {
-        playerSvg.style.left = newX + 'px';
-        playerSvg.style.top = newY + 'px';
+    playerX = Math.max(0, Math.min(playerX, maxX));
+    playerY = Math.max(0, Math.min(playerY, maxY));
+
+    playerSvg.style.left = playerX + 'px';
+    playerSvg.style.top = playerY + 'px';
+
+    if (checkCollision()) {
+        playerSvg.style.left = (playerX - velocityX) + 'px';
+        playerSvg.style.top = (playerY - velocityY) + 'px';
     }
 }
 
-function checkCollision(newX, newY) {
+function checkCollision() {
     const playerSvg = document.getElementById('player');
     const playerCircle = playerSvg.querySelector('circle');
-    const playerCenterX = newX + parseFloat(playerCircle.getAttribute('cx'));
-    const playerCenterY = newY + parseFloat(playerCircle.getAttribute('cy'));
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
     const obstacles = document.querySelectorAll('#obstacles path');
 
     for (let obstacle of obstacles) {
-        const bbox = obstacle.getBBox();
-        if (playerCenterX >= bbox.x && playerCenterX <= bbox.x + bbox.width &&
-            playerCenterY >= bbox.y && playerCenterY <= bbox.y + bbox.height) {
+        const obstacleRect = obstacle.getBoundingClientRect();
+        if (playerCenterX > obstacleRect.left && playerCenterX < obstacleRect.right &&
+            playerCenterY > obstacleRect.top && playerCenterY < obstacleRect.bottom) {
             return true;
         }
     }
-    return false; 
+    return false;
 }
 
 </script>
