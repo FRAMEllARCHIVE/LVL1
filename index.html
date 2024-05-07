@@ -81,25 +81,21 @@ function movePlayer(velocityX, velocityY) {
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.left = playerX + 'px';
-    } else {
-        const maxX = window.innerWidth;
-        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
-    }
+    const maxX = window.innerWidth;
+    const maxY = window.innerHeight;
 
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-    if (checkCollision()) {
-        playerSvg.style.top = playerY + 'px';
-    } else {
-        const maxY = window.innerHeight;
-        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
+    let newPlayerX = Math.max(11, Math.min(playerX + velocityX, maxX));
+    let newPlayerY = Math.max(11, Math.min(playerY + velocityY, maxY));
+
+    if (!checkCollision(newPlayerX, newPlayerY)) {
+        playerX = newPlayerX;
+        playerY = newPlayerY;
     }
 
     playerSvg.style.left = playerX + 'px';
     playerSvg.style.top = playerY + 'px';
 }
+
 
 function checkCollision() {
     const playerSvg = document.getElementById('player');
