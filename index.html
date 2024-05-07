@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PONDER</title>
     <style>
-
         body {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -32,94 +31,72 @@
             position: absolute;
         }
 
-        #player {
-            overflow: hidden;
-            width: 22px;
-            height: 22px;
+        .player {
+            fill: blue;
         }
 
-        #obstacles {
-            overflow: hidden;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            width: 90%;
-            height: 90%;
+        .obstacle {
+            fill: red;
             opacity: 0.2;
         }
-
     </style>
 </head>
 <body>
 
 <div class="background-container"></div>
 
-<svg id="player" style="left:50%; top:50%; transform:translate(-50%, -50%);">
-    <circle cx="11" cy="11" r="11" fill="blue"/>
+<svg id="player" class="player" width="22" height="22" style="left:50%; top:50%; transform:translate(-50%, -50%);">
+    <circle cx="11" cy="11" r="11"/>
 </svg>
 
-<svg id="obstacles" width="90%" height="90%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
-    <path d="M10,10 h40 v20 h-20 z" fill="red"/>
-</svg>
-
-<svg id="startingposition" width="100%" height="100%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
-    <circle cx="41" cy="55" r="1" fill="blue"/>
+<svg id="obstacles" class="obstacle" width="90%" height="90%" viewBox="0 0 63.5 63.5" preserveAspectRatio="xMidYMid meet">
+    <path d="M10,10 h40 v20 h-20 z"/>
 </svg>
 
 <script>
+    window.addEventListener('devicemotion', function (event) {
+        movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
+    });
 
-window.addEventListener('devicemotion', function (event) {
-    movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
-});
+    function movePlayer(velocityX, velocityY) {
+        velocityX *= 0.1;
+        velocityY *= 0.1;
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-function movePlayer(velocityX, velocityY) {
-    velocityX *= 0.1;
-    velocityY *= 0.1;
-    const playerSvg = document.getElementById('player');
-    let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-    let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+        const playerWidth = playerSvg.clientWidth;
+        const playerHeight = playerSvg.clientHeight;
 
-    const maxX = window.innerWidth;
-    const maxY = window.innerHeight;
+        let newPlayerX = Math.max(11, Math.min(playerX + velocityX, window.innerWidth - playerWidth));
+        let newPlayerY = Math.max(11, Math.min(playerY + velocityY, window.innerHeight - playerHeight));
 
-    let newPlayerX = Math.max(11, Math.min(playerX + velocityX, maxX));
-    let newPlayerY = Math.max(11, Math.min(playerY + velocityY, maxY));
-
-    if (!checkCollision(newPlayerX, newPlayerY)) {
-        playerX = newPlayerX;
-        playerY = newPlayerY;
-    }
-
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
-}
-
-
-function checkCollision() {
-    const playerSvg = document.getElementById('player');
-    const playerCircle = playerSvg.querySelector('circle');
-    const playerRect = playerSvg.getBoundingClientRect();
-    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-    const obstacles = document.querySelectorAll('#obstacles path');
-    const svg = document.querySelector('svg');
-    const point = svg.createSVGPoint();
-    point.x = playerCenterX;
-    point.y = playerCenterY;
-
-    for (let obstacle of obstacles) {
-        const transform = obstacle.getScreenCTM().inverse();
-        const transformedPoint = point.matrixTransform(transform);
-        if (obstacle.isPointInFill(transformedPoint)) {
-            return true;
+        if (!checkCollision(newPlayerX, newPlayerY, playerCircle)) {
+            playerX = newPlayerX;
+            playerY = newPlayerY;
         }
-    }
-    return false; 
-}
 
+        playerSvg.style.left = playerX + 'px';
+        playerSvg.style.top = playerY + 'px';
+    }
+
+    function checkCollision(playerX, playerY, playerCircle) {
+        const obstacles = document.querySelectorAll('#obstacles path');
+        for (let obstacle of obstacles) {
+            const obstacleRect = obstacle.getBBox();
+            const playerRect = playerCircle.getBoundingClientRect();
+            if (
+                playerX < obstacleRect.x + obstacleRect.width &&
+                playerX + playerRect.width > obstacleRect.x &&
+                playerY < obstacleRect.y + obstacleRect.height &&
+                playerY + playerRect.height > obstacleRect.y
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
 </script>
 
 </body>
