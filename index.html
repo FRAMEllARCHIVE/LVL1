@@ -88,16 +88,10 @@ function movePlayer(velocityX, velocityY) {
     velocityX *= 0.1;
     velocityY *= 0.1;
     const playerSvg = document.getElementById('player');
-    const contentContainer = document.querySelector('.content');
     let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
     let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    playerX = Math.max(11, Math.min(playerX + velocityX, contentContainer.offsetWidth - 22)); // Subtract 22 for player width
-    playerY = Math.max(11, Math.min(playerY + velocityY, contentContainer.offsetHeight - 22)); // Subtract 22 for player height
-
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
-
+    playerSvg.style.left = (playerX + velocityX) + 'px';
     if (checkCollision()) {
         playerSvg.style.left = playerX + 'px';
     } else {
