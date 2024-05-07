@@ -86,17 +86,10 @@ window.addEventListener('devicemotion', function (event) {
 function movePlayer(velocityX, velocityY) {
     velocityX *= 0.1;
     velocityY *= 0.1;
-
     const playerSvg = document.getElementById('player');
 
-    const centerX = (window.innerWidth - playerSvg.getBoundingClientRect().width) / 2;
-    const centerY = (window.innerHeight - playerSvg.getBoundingClientRect().height) / 2;
-    
-    playerSvg.style.left = centerX + 'px';
-    playerSvg.style.top = centerY + 'px';
-
-    let playerX = centerX;
-    let playerY = centerY;
+    let playerX = (window.innerWidth - playerSvg.getBoundingClientRect().width) / 2;
+    let playerY = (window.innerHeight - playerSvg.getBoundingClientRect().height) / 2;
 
     playerSvg.style.left = (playerX + velocityX) + 'px';
     if (checkCollision()) {
