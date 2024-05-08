@@ -185,7 +185,8 @@ function checkNavigationCollision() {
         playerCenterY >= navigationRect.top &&
         playerCenterY <= navigationRect.bottom
     ) {
-        window.history.replaceState({}, '', "https://framellarchive.github.io/LVL2/");
+        window.history.replaceState({}, '', "/LVL2/");
+        location.reload();
     }
 }
 
