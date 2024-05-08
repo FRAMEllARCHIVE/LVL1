@@ -86,6 +86,19 @@ transform: translate(-50%, -50%);
 
 
 <script>
+    const playerSvg = document.getElementById('player');
+
+    function teleportPlayerToCenterOfContent() {
+        const content = document.querySelector('.content');
+        const contentRect = content.getBoundingClientRect();
+        const centerX = contentRect.width / 2 + contentRect.left;
+        const centerY = contentRect.height / 2 + contentRect.top;
+        playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
+        playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
+    }
+
+    teleportPlayerToCenterOfContent();
+
 
 window.addEventListener('devicemotion', function (event) {
     movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
