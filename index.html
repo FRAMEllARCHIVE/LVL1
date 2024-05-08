@@ -90,11 +90,17 @@ transform: translate(-50%, -50%);
 
     function teleportPlayerToCenterOfContent() {
         const content = document.querySelector('.content');
-        const contentRect = content.getBoundingClientRect();
-        const centerX = contentRect.width / 2 + contentRect.left;
-        const centerY = contentRect.height / 2 + contentRect.top;
-        playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
-        playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
+        const centerX = content.clientWidth / 2;
+        const centerY = content.clientHeight / 2;
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + playerRect.width / 2;
+        const playerCenterY = playerRect.top + playerRect.height / 2;
+
+        const deltaX = centerX - playerCenterX;
+        const deltaY = centerY - playerCenterY;
+
+        playerSvg.style.left = (parseFloat(playerSvg.style.left) + deltaX) + 'px';
+        playerSvg.style.top = (parseFloat(playerSvg.style.top) + deltaY) + 'px';
     }
 
     teleportPlayerToCenterOfContent();
