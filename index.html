@@ -90,8 +90,8 @@ transform: translate(-50%, -50%);
 
     function teleportPlayerToCenterOfContent() {
         const content = document.querySelector('.content');
-        const centerX = content.clientWidth / 2;
-        const centerY = content.clientHeight / 2;
+        const centerX = content.clientWidth * 0.58;
+        const centerY = content.clientHeight * 0.92;
         playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
         playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
     }
