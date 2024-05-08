@@ -169,25 +169,34 @@
         return false;
     }
 
-    function checkNavigationCollision() {
-        const playerSvg = document.getElementById('player');
-        const navigationSvg = document.getElementById('navigation');
-        const playerCircle = playerSvg.querySelector('circle');
-        const playerRect = playerSvg.getBoundingClientRect();
-        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+function checkNavigationCollision() {
+    const playerSvg = document.getElementById('player');
+    const navigationSvg = document.getElementById('navigation');
+    const playerCircle = playerSvg.querySelector('circle');
+    const playerRect = playerSvg.getBoundingClientRect();
+    const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+    const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
-        const navigationRect = navigationSvg.getBoundingClientRect();
+    const navigationRect = navigationSvg.getBoundingClientRect();
 
-        if (
-            playerCenterX >= navigationRect.left &&
-            playerCenterX <= navigationRect.right &&
-            playerCenterY >= navigationRect.top &&
-            playerCenterY <= navigationRect.bottom
-        ) {
-            window.location.href = "https://framellarchive.github.io/LVL2/";
-        }
+    if (
+        playerCenterX >= navigationRect.left &&
+        playerCenterX <= navigationRect.right &&
+        playerCenterY >= navigationRect.top &&
+        playerCenterY <= navigationRect.bottom
+    ) {
+        navigateWithoutAddressBar("https://framellarchive.github.io/LVL2/");
     }
+}
+
+function navigateWithoutAddressBar(url) {
+    // Replace the current state with the new URL without adding it to the history
+    window.history.replaceState({}, "", url);
+
+    // Navigate to the new URL
+    window.location.replace(url);
+}
+
 </script>
 
 </body>
