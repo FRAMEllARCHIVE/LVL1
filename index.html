@@ -48,6 +48,9 @@
         #player {
             width: 2px;
             height: 2px;
+left:50%; 
+top:50%; 
+transform: translate(-50%, -50%);
         }
 
         #obstacles {
@@ -101,7 +104,7 @@ function movePlayer(velocityX, velocityY) {
         playerSvg.style.left = playerX + 'px';
     } else {
         const maxX = window.innerWidth;
-        playerX = Math.max(11, Math.min(playerX + velocityX, maxX));
+        playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
     }
 
     playerSvg.style.top = (playerY + velocityY) + 'px';
@@ -109,7 +112,7 @@ function movePlayer(velocityX, velocityY) {
         playerSvg.style.top = playerY + 'px';
     } else {
         const maxY = window.innerHeight;
-        playerY = Math.max(11, Math.min(playerY + velocityY, maxY));
+        playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
     }
 
     playerSvg.style.left = playerX + 'px';
