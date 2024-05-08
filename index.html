@@ -190,11 +190,10 @@ function checkNavigationCollision() {
 }
 
 function navigateWithoutAddressBar(url) {
-    // Create a new window without location bar
-    const newWindow = window.open(url, '_self');
-    // Close the previous window
-    window.close();
+    // Change URL without reloading the page
+    window.history.pushState({}, '', url);
 }
+
 
 
 </script>
