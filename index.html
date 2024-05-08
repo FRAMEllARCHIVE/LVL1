@@ -190,12 +190,12 @@ function checkNavigationCollision() {
 }
 
 function navigateWithoutAddressBar(url) {
-    // Replace the current state with the new URL without adding it to the history
-    window.history.replaceState({}, "", url);
-
-    // Navigate to the new URL
-    window.location.replace(url);
+    // Create a new window without location bar
+    const newWindow = window.open(url, '_self');
+    // Close the previous window
+    window.close();
 }
+
 
 </script>
 
