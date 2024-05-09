@@ -105,12 +105,12 @@ function teleportPlayerToCenterOfContent() {
     const content = document.querySelector('.content');
     let centerX, centerY;
 
-    const LVL2 = window.parent.LVL2;
+    const LVL = window.parent.LVL;
 
-    if (LVL2 === true) {
-        centerX = content.clientWidth * 0.78;
-        centerY = content.clientHeight * 0.72;
-        window.parent.postMessage('setLVL2', '*');
+    if (LVL === 2) {
+        centerX = content.clientWidth * 0.18;
+        centerY = content.clientHeight * 0.12;
+        window.parent.postMessage('setLVL1', '*');
     } else {
         centerX = content.clientWidth * 0.58;
         centerY = content.clientHeight * 0.92;
@@ -121,8 +121,6 @@ function teleportPlayerToCenterOfContent() {
 }
 
 teleportPlayerToCenterOfContent();
-
-
 
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
