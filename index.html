@@ -69,7 +69,7 @@
             left: 100%;
             top: 55%;
             transform: translate(-50%, -50%);
-            opacity: 0.2;
+            opacity: 0;
         }
 
     </style>
@@ -101,16 +101,17 @@
 <script>
 const playerSvg = document.getElementById('player');
 
-function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
+function teleportPlayerToCenterOfContent() {
     const content = document.querySelector('.content');
     let centerX, centerY;
 
-    if (cameFromLVL2) {
-        // Coordinates for direct navigation from LVL2
-        centerX = content.clientWidth * 0.68;
-        centerY = content.clientHeight * 0.82;
+    const LVL = window.parent.LVL;
+
+    if (LVL === 2) {
+        centerX = content.clientWidth * 0.18;
+        centerY = content.clientHeight * 0.12;
+        window.parent.postMessage('setLVL1', '*');
     } else {
-        // Default coordinates
         centerX = content.clientWidth * 0.58;
         centerY = content.clientHeight * 0.92;
     }
@@ -120,22 +121,6 @@ function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
 }
 
 teleportPlayerToCenterOfContent();
-
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://[your-parent-origin]" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-        window.top.postMessage('reset', event.origin);
-    }
-});
-
-
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://framellarchive.github.io/IFRAME/" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-    }
-});
-
-
 
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
@@ -168,7 +153,7 @@ window.addEventListener('message', function(event) {
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
 
-        checkNavigationCollision(); // Check for navigation collision
+        checkNavigationCollision();
     }
 
     function checkCollision() {
