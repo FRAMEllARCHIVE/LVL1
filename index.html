@@ -101,13 +101,16 @@
 <script>
 const playerSvg = document.getElementById('player');
 
-function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
+function teleportPlayerToCenterOfContent() {
     const content = document.querySelector('.content');
     let centerX, centerY;
 
-    if (cameFromLVL2) {
+    const LVL2 = window.parent.LVL2;
+
+    if (LVL2) {
         centerX = content.clientWidth * 0.78;
         centerY = content.clientHeight * 0.72;
+        window.parent.postMessage('setLVL2', '*');
     } else {
         centerX = content.clientWidth * 0.58;
         centerY = content.clientHeight * 0.92;
@@ -119,12 +122,7 @@ function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
 
 teleportPlayerToCenterOfContent();
 
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://framellarchive.github.io/IFRAME/" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-        window.top.postMessage('reset', event.origin);
-    }
-});
+
 
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
