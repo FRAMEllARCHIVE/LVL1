@@ -126,15 +126,6 @@ window.addEventListener('message', function(event) {
     }
 });
 
-
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://framellarchive.github.io/IFRAME/" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-    }
-});
-
-
-
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
