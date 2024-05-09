@@ -107,7 +107,7 @@ function teleportPlayerToCenterOfContent() {
 
     const LVL2 = window.parent.LVL2;
 
-    if (LVL2) {
+    if (LVL2 === true) {
         centerX = content.clientWidth * 0.78;
         centerY = content.clientHeight * 0.72;
         window.parent.postMessage('setLVL2', '*');
