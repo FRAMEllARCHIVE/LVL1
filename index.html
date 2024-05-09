@@ -106,11 +106,9 @@ function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
     let centerX, centerY;
 
     if (cameFromLVL2) {
-        // Coordinates for direct navigation from LVL2
         centerX = content.clientWidth * 0.68;
         centerY = content.clientHeight * 0.82;
     } else {
-        // Default coordinates
         centerX = content.clientWidth * 0.58;
         centerY = content.clientHeight * 0.92;
     }
@@ -122,7 +120,7 @@ function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
 teleportPlayerToCenterOfContent();
 
 window.addEventListener('message', function(event) {
-    if (event.origin === "https://[your-parent-origin]" && event.data === 'cameFromLVL2') {
+    if (event.origin === "https://framellarchive.github.io/IFRAME/" && event.data === 'cameFromLVL2') {
         teleportPlayerToCenterOfContent(true);
         window.top.postMessage('reset', event.origin);
     }
