@@ -99,42 +99,17 @@
 
 
 <script>
-const playerSvg = document.getElementById('player');
+    const playerSvg = document.getElementById('player');
 
-function teleportPlayerToCenterOfContent(cameFromLVL2 = false) {
-    const content = document.querySelector('.content');
-    let centerX, centerY;
-
-    if (cameFromLVL2) {
-        // Coordinates for direct navigation from LVL2
-        centerX = content.clientWidth * 0.68;
-        centerY = content.clientHeight * 0.82;
-    } else {
-        // Default coordinates
-        centerX = content.clientWidth * 0.58;
-        centerY = content.clientHeight * 0.92;
+    function teleportPlayerToCenterOfContent() {
+        const content = document.querySelector('.content');
+        const centerX = content.clientWidth * 0.58;
+        const centerY = content.clientHeight * 0.92;
+        playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
+        playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
     }
 
-    playerSvg.style.left = (centerX - playerSvg.clientWidth / 2) + 'px';
-    playerSvg.style.top = (centerY - playerSvg.clientHeight / 2) + 'px';
-}
-
-teleportPlayerToCenterOfContent();
-
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://[your-parent-origin]" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-        window.top.postMessage('reset', event.origin);
-    }
-});
-
-
-window.addEventListener('message', function(event) {
-    if (event.origin === "https://framellarchive.github.io/IFRAME/" && event.data === 'cameFromLVL2') {
-        teleportPlayerToCenterOfContent(true);
-    }
-});
-
+    teleportPlayerToCenterOfContent();
 
 
     window.addEventListener('devicemotion', function (event) {
