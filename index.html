@@ -99,6 +99,20 @@
 
 
 <script>
+
+if (screen.orientation) {
+    screen.orientation.lock('portrait')
+        .then(function success() {
+            console.log('Orientation locked');
+        })
+        .catch(function error(err) {
+            console.error('Error locking orientation: ', err);
+        });
+} else {
+    console.warn('Screen orientation API not supported');
+}
+
+    
 document.addEventListener('DOMContentLoaded', function() {
     const playerSvg = document.getElementById('player');
 
