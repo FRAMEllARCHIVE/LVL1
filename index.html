@@ -99,6 +99,7 @@
 
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     const playerSvg = document.getElementById('player');
 
     function teleportPlayerToCenterOfContent() {
@@ -188,7 +189,7 @@
                 window.parent.postMessage('navigateToLVL2', '*');
             }
         }
-
+});
 </script>
 
 </body>
