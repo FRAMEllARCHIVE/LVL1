@@ -100,7 +100,7 @@
 
 <script>
 
-        window.addEventListener('load', function() {
+window.addEventListener('load', function() {
     const playerSvg = document.getElementById('player');
 
     function teleportPlayerToCenterOfContent() {
@@ -191,6 +191,12 @@
             }
         }
 });
+
+const link = document.createElement('link');
+link.rel = 'prefetch';
+link.href = 'https://framellarchive.github.io/LVL2/';
+document.head.appendChild(link);
+    
 </script>
 
 </body>
