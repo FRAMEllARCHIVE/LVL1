@@ -68,7 +68,7 @@
         #navigation {
             position: absolute;
             left: 98%;
-            top: 44%;
+            top: 46%;
             transform: translate(-50%, -50%);
             opacity: 0;
         }
@@ -156,25 +156,6 @@ window.addEventListener('load', function() {
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
         }
 
-        playerSvg.style.top = (playerY + velocityY) + 'px';
-        if (checkFall()) {
-    velocityY = -velocityY;
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-        } else {
-            const maxY = window.innerHeight;
-            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
-        }
-
-        playerSvg.style.left = (playerX + velocityX) + 'px';
-        if (checkFall()) {
-    velocityX = -velocityX;
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-        } else {
-            const maxX = window.innerWidth;
-            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
-        }
-
-
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
 
@@ -204,30 +185,7 @@ window.addEventListener('load', function() {
         return false;
     }
 
-    function checkFall() {
-        const playerSvg = document.getElementById('player');
-        const playerCircle = playerSvg.querySelector('circle');
-        const playerRect = playerSvg.getBoundingClientRect();
-        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-        const fall = document.querySelectorAll('#fall path');
-        const svg = document.querySelector('svg');
-        const point = svg.createSVGPoint();
-        point.x = playerCenterX;
-        point.y = playerCenterY;
-
-        for (let fallArea of fallAreas) {
-            const transform = fallArea.getScreenCTM().inverse();
-            const transformedPoint = point.matrixTransform(transform);
-            if (fallArea.isPointInFill(transformedPoint)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-function checkNavigationCollision() {
+        function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
             const navigationSvg = document.getElementById('navigation');
             const playerCircle = playerSvg.querySelector('circle');
