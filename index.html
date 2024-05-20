@@ -73,7 +73,7 @@
             opacity: 0;
         }
 
-        #fall {
+        #damage {
             position: absolute;
             left: 58%;
             top: 71%;
@@ -104,7 +104,7 @@
             <circle cx="35" cy="35" r="35" fill="blue"/>
         </svg>
 
-        <svg id="fall" width="90" height="90" viewBox="0 0 70 70">
+        <svg id="damage" width="90" height="90" viewBox="0 0 70 70">
             <circle cx="35" cy="35" r="35" fill="red"/>
         </svg>
 
@@ -149,6 +149,22 @@ window.addEventListener('load', function() {
         }
 
         playerSvg.style.top = (playerY + velocityY) + 'px';
+        if (checkDamage()) {
+            playerSvg.style.top = playerY + 'px';
+        } else {
+            const maxY = window.innerHeight;
+            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
+        }
+
+        playerSvg.style.left = (playerX + velocityX) + 'px';
+        if (checkDamage()) {
+            playerSvg.style.left = playerX + 'px';
+        } else {
+            const maxX = window.innerWidth;
+            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
+        }
+
+        playerSvg.style.top = (playerY + velocityY) + 'px';
         if (checkCollision()) {
             playerSvg.style.top = playerY + 'px';
         } else {
@@ -162,7 +178,7 @@ window.addEventListener('load', function() {
         checkNavigationCollision();
     }
 
-    function checkCollision() {
+function checkCollision() {
         const playerSvg = document.getElementById('player');
         const playerCircle = playerSvg.querySelector('circle');
         const playerRect = playerSvg.getBoundingClientRect();
@@ -185,7 +201,30 @@ window.addEventListener('load', function() {
         return false;
     }
 
-        function checkNavigationCollision() {
+function checkDamage() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const obstacles = document.querySelectorAll('#damage path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
+
+        for (let damage of damages) {
+            const transform = damage.getScreenCTM().inverse();
+            const transformedPoint = point.matrixTransform(transform);
+            if (damage.isPointInFill(transformedPoint)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
             const navigationSvg = document.getElementById('navigation');
             const playerCircle = playerSvg.querySelector('circle');
