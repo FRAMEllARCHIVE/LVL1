@@ -156,11 +156,29 @@ window.addEventListener('load', function() {
             playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
         }
 
+        playerSvg.style.top = (playerY + velocityY) + 'px';
+        if (checkFall()) {
+    velocityY = -velocityY;
+    playerSvg.style.top = (playerY + velocityY) + 'px';
+        } else {
+            const maxY = window.innerHeight;
+            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
+        }
+
+        playerSvg.style.left = (playerX + velocityX) + 'px';
+        if (checkFall()) {
+    velocityX = -velocityX;
+    playerSvg.style.left = (playerX + velocityX) + 'px';
+        } else {
+            const maxX = window.innerWidth;
+            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
+        }
+
+
         playerSvg.style.left = playerX + 'px';
         playerSvg.style.top = playerY + 'px';
 
         checkNavigationCollision();
-        checkFallCollision();
     }
 
     function checkCollision() {
@@ -186,6 +204,29 @@ window.addEventListener('load', function() {
         return false;
     }
 
+    function checkFall() {
+        const playerSvg = document.getElementById('player');
+        const playerCircle = playerSvg.querySelector('circle');
+        const playerRect = playerSvg.getBoundingClientRect();
+        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+        const fall = document.querySelectorAll('#fall path');
+        const svg = document.querySelector('svg');
+        const point = svg.createSVGPoint();
+        point.x = playerCenterX;
+        point.y = playerCenterY;
+
+        for (let fallArea of fallAreas) {
+            const transform = fallArea.getScreenCTM().inverse();
+            const transformedPoint = point.matrixTransform(transform);
+            if (fallArea.isPointInFill(transformedPoint)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
             const navigationSvg = document.getElementById('navigation');
@@ -205,28 +246,6 @@ function checkNavigationCollision() {
                 window.parent.postMessage('navigateToLVL2', '*');
             }
         }
-
-function checkFallCollision() {
-            const playerSvg = document.getElementById('player');
-            const fallSvg = document.getElementById('fall');
-            const playerCircle = playerSvg.querySelector('circle');
-            const playerRect = playerSvg.getBoundingClientRect();
-            const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-            const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-            const fallRect = fallSvg.getBoundingClientRect();
-
-            if (
-                playerCenterX >= fallRect.left &&
-                playerCenterX <= fallRect.right &&
-                playerCenterY >= fallRect.top &&
-                playerCenterY <= fallRect.bottom
-            ) {
-                window.parent.postMessage('LIFE-1', '*');
-                window.parent.postMessage('navigateToLVL1', '*');
-            }
-        }
-
 });
 
 </script>
