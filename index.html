@@ -73,10 +73,10 @@
             opacity: 0;
         }
 
-        #damage {
+        #fall {
             position: absolute;
             left: 58%;
-            top: 79%;
+            top: 71%;
             transform: translate(-50%, -50%);
             opacity: 0.2;
         }
@@ -104,8 +104,8 @@
             <circle cx="35" cy="35" r="35" fill="blue"/>
         </svg>
 
-        <svg id="damage" width="90" height="90" viewBox="0 0 70 70">
-            <path d="M68.78,0 L63.78,0 L23.78,63.78 L61.78,67.78 Z" fill="red"/>
+        <svg id="fall" width="90" height="90" viewBox="0 0 70 70">
+            <circle cx="35" cy="35" r="35" fill="red"/>
         </svg>
 
     </div>
@@ -132,48 +132,37 @@ window.addEventListener('load', function() {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
 
-function movePlayer(velocityX, velocityY) {
-    velocityX *= 0.1;
-    velocityY *= 0.1;
-    const playerSvg = document.getElementById('player');
+    function movePlayer(velocityX, velocityY) {
+        velocityX *= 0.1;
+        velocityY *= 0.1;
+        const playerSvg = document.getElementById('player');
 
-    let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
-    let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
+        let playerX = parseFloat(playerSvg.style.left.replace('px', ''));
+        let playerY = parseFloat(playerSvg.style.top.replace('px', ''));
 
-    const maxX = window.innerWidth;
-    const maxY = window.innerHeight;
+        playerSvg.style.left = (playerX + velocityX) + 'px';
+        if (checkCollision()) {
+            playerSvg.style.left = playerX + 'px';
+        } else {
+            const maxX = window.innerWidth;
+            playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
+        }
 
-    playerSvg.style.left = (playerX + velocityX) + 'px';
-    if (checkCollision()) {
+        playerSvg.style.top = (playerY + velocityY) + 'px';
+        if (checkCollision()) {
+            playerSvg.style.top = playerY + 'px';
+        } else {
+            const maxY = window.innerHeight;
+            playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
+        }
+
         playerSvg.style.left = playerX + 'px';
-    } else {
-        playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
-    }
-    if (checkDamage()) {
-        playerSvg.style.left = playerX + 'px';
-    } else {
-        playerX = Math.max(2, Math.min(playerX + velocityX, maxX - 4));
-    }
-
-    playerSvg.style.top = (playerY + velocityY) + 'px';
-    if (checkDamage()) {
         playerSvg.style.top = playerY + 'px';
-    } else {
-        playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
-    }
-    if (checkCollision()) {
-        playerSvg.style.top = playerY + 'px';
-    } else {
-        playerY = Math.max(2, Math.min(playerY + velocityY, maxY - 4));
+
+        checkNavigationCollision();
     }
 
-    playerSvg.style.left = playerX + 'px';
-    playerSvg.style.top = playerY + 'px';
-
-    checkNavigationCollision();
-}
-
-function checkCollision() {
+    function checkCollision() {
         const playerSvg = document.getElementById('player');
         const playerCircle = playerSvg.querySelector('circle');
         const playerRect = playerSvg.getBoundingClientRect();
@@ -196,30 +185,7 @@ function checkCollision() {
         return false;
     }
 
-function checkDamage() {
-        const playerSvg = document.getElementById('player');
-        const playerCircle = playerSvg.querySelector('circle');
-        const playerRect = playerSvg.getBoundingClientRect();
-        const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
-        const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
-
-        const damages = document.querySelectorAll('#damage path');
-        const svg = document.querySelector('svg');
-        const point = svg.createSVGPoint();
-        point.x = playerCenterX;
-        point.y = playerCenterY;
-
-        for (let damage of damages) {
-            const transform = damage.getScreenCTM().inverse();
-            const transformedPoint = point.matrixTransform(transform);
-            if (damage.isPointInFill(transformedPoint)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-function checkNavigationCollision() {
+        function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
             const navigationSvg = document.getElementById('navigation');
             const playerCircle = playerSvg.querySelector('circle');
