@@ -68,7 +68,7 @@
         #navigation {
             position: absolute;
             left: 98%;
-            top: 46%;
+            top: 44%;
             transform: translate(-50%, -50%);
             opacity: 0;
         }
@@ -160,6 +160,7 @@ window.addEventListener('load', function() {
         playerSvg.style.top = playerY + 'px';
 
         checkNavigationCollision();
+        checkFallCollision();
     }
 
     function checkCollision() {
@@ -185,17 +186,16 @@ window.addEventListener('load', function() {
         return false;
     }
 
- function checkNavigationCollision() {
+function checkNavigationCollision() {
             const playerSvg = document.getElementById('player');
             const navigationSvg = document.getElementById('navigation');
-            const fallSvg = document.getElementById('fall');
             const playerCircle = playerSvg.querySelector('circle');
             const playerRect = playerSvg.getBoundingClientRect();
             const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
             const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
 
             const navigationRect = navigationSvg.getBoundingClientRect();
-            const fallRect = fallSvg.getBoundingClientRect();
+
             if (
                 playerCenterX >= navigationRect.left &&
                 playerCenterX <= navigationRect.right &&
@@ -204,6 +204,18 @@ window.addEventListener('load', function() {
             ) {
                 window.parent.postMessage('navigateToLVL2', '*');
             }
+        }
+
+function checkFallCollision() {
+            const playerSvg = document.getElementById('player');
+            const fallSvg = document.getElementById('fall');
+            const playerCircle = playerSvg.querySelector('circle');
+            const playerRect = playerSvg.getBoundingClientRect();
+            const playerCenterX = playerRect.left + parseFloat(playerCircle.getAttribute('cx'));
+            const playerCenterY = playerRect.top + parseFloat(playerCircle.getAttribute('cy'));
+
+            const fallRect = fallSvg.getBoundingClientRect();
+
             if (
                 playerCenterX >= fallRect.left &&
                 playerCenterX <= fallRect.right &&
@@ -211,8 +223,10 @@ window.addEventListener('load', function() {
                 playerCenterY <= fallRect.bottom
             ) {
                 window.parent.postMessage('LIFE-1', '*');
+                window.parent.postMessage('navigateToLVL1', '*');
             }
         }
+
 });
 
 </script>
