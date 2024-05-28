@@ -16,10 +16,10 @@
         }
 
         .content {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vh;
-            max-height: 100vw;
+            width: 90vw;
+            height: 90vh;
+            max-width: 90vh;
+            max-height: 90vw;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -121,6 +121,19 @@ window.addEventListener('load', function() {
     window.addEventListener('devicemotion', function (event) {
         movePlayer(-event.accelerationIncludingGravity.x * 2, event.accelerationIncludingGravity.y * 2);
     });
+
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('devicemotion', handleMotion);
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+
 
     function movePlayer(velocityX, velocityY) {
         velocityX *= 0.1;
